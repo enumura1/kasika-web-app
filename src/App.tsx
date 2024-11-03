@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, Search, MoreHorizontal, ArrowRight } from 'lucide-react';
+import { Menu, MoreHorizontal, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from "./components/ui/card";
+import { SearchSection } from './components/search/SearchSection';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,6 @@ import {
 import { categories } from "./data/categories";
 
 const App = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const visibleCategories = categories.slice(0, 8);
   const hiddenCategories = categories.slice(8);
 
@@ -221,25 +220,8 @@ const App = () => {
       {/* メインコンテンツ */}
       <main className="container mx-auto px-4 py-12">
         {/* 検索セクション */}
-        <section className="max-w-xl mx-auto mb-16">
-          <motion.h3 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-xl font-semibold text-slate-800 mb-4 text-center"
-          >
-            あなたの考えを入力してください
-          </motion.h3>
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="例：新規事業の立ち上げプロセスを説明したい..."
-              className="w-full pl-12 pr-4 py-3 border border-blue-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 bg-white shadow-sm"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </section>
+        {/* 検索セクション */}
+        <SearchSection />
 
         {/* フォーマットセクション */}
         <section>
