@@ -57,7 +57,7 @@ export function SearchResult({ searchQuery, onBack,  onCategorySelect = () => {}
     const fetchResults = async () => {
       setLoading(true);
       // 擬似的な遅延
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // ランダムにカテゴリを選択
       const randomCategory = categories[Math.floor(Math.random() * categories.length)];
