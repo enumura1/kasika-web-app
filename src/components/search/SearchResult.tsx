@@ -17,6 +17,13 @@ type SearchResult = {
   svg: string;
 };
 
+interface SearchResultProps {
+  searchQuery: string;
+  onBack: () => void;
+  onCategorySelect?: (category: typeof categories[0]) => void;  // オプショナルに
+}
+
+
 // スケルトンローダーコンポーネント
 const SkeletonLoader = () => (
   <div className="space-y-8">
@@ -39,12 +46,7 @@ const SkeletonLoader = () => (
   </div>
 );
 
-interface SearchResultProps {
-  searchQuery: string;
-  onBack: () => void;
-}
-
-export function SearchResult({ searchQuery, onBack }: SearchResultProps) {
+export function SearchResult({ searchQuery, onBack,  onCategorySelect = () => {} }: SearchResultProps) {
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [relatedCategories, setRelatedCategories] = useState<typeof categories>([]);
@@ -55,7 +57,7 @@ export function SearchResult({ searchQuery, onBack }: SearchResultProps) {
     const fetchResults = async () => {
       setLoading(true);
       // 擬似的な遅延
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // ランダムにカテゴリを選択
       const randomCategory = categories[Math.floor(Math.random() * categories.length)];
@@ -182,7 +184,8 @@ export function SearchResult({ searchQuery, onBack }: SearchResultProps) {
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Card className="cursor-pointer hover:shadow-lg transition-all">
+                    <Card className="cursor-pointer hover:shadow-lg transition-all"
+                      onClick={() => onCategorySelect && onCategorySelect(category)}>
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{category.icon}</span>
