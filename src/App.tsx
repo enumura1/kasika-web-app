@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, MoreHorizontal, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from "./components/ui/card";
@@ -12,6 +13,7 @@ import { categories } from "./data/categories";
 const App = () => {
   const visibleCategories = categories.slice(0, 8);
   const hiddenCategories = categories.slice(8);
+  const formatSectionRef = useRef<HTMLElement>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -29,6 +31,10 @@ const App = () => {
       y: 0,
       opacity: 1
     }
+  };
+
+  const scrollToFormats = () => {
+    formatSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -160,10 +166,13 @@ const App = () => {
 
             {/* 右側のアクション */}
             <div className="flex items-center space-x-4">
-              <button className="hidden md:flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <span className="font-medium">試してみる</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
+            <button 
+              onClick={scrollToFormats} 
+              className="hidden md:flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <span className="font-medium">試してみる</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
             </div>
           </div>
         </div>
@@ -194,6 +203,7 @@ const App = () => {
                 最適な図解フォーマットを提案します。
               </motion.p>
               <motion.button 
+                onClick={scrollToFormats}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
@@ -218,13 +228,12 @@ const App = () => {
       </section>
 
       {/* メインコンテンツ */}
-      <main className="container mx-auto px-4 py-12">
-        {/* 検索セクション */}
+      <main className="container mx-auto px-4 py-12" ref={formatSectionRef}>
         {/* 検索セクション */}
         <SearchSection />
 
         {/* フォーマットセクション */}
-        <section>
+        <section >
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl font-semibold text-slate-800">
               人気の図解フォーマット
@@ -436,6 +445,7 @@ const App = () => {
                 カシカを使って、あなたの考えをより分かりやすく伝えてみませんか？
               </p>
               <motion.button 
+                onClick={scrollToFormats}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold inline-flex items-center space-x-2 hover:bg-blue-50 transition-colors"

@@ -4,6 +4,10 @@ import { Card, CardContent } from '../ui/card';
 import { ArrowLeft, Search } from 'lucide-react';
 import { categories } from '../../data/categories';
 
+import { TemplatePreview } from '../template/TemplatePreview';
+import { useTemplates } from '../../hooks/useTemplates';
+
+
 // 検索結果の型定義
 type SearchResult = {
   formatId: number;
@@ -44,6 +48,7 @@ export function SearchResult({ searchQuery, onBack }: SearchResultProps) {
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [relatedCategories, setRelatedCategories] = useState<typeof categories>([]);
+  const { templates } = useTemplates();
 
   // 疑似的な検索処理
   useEffect(() => {
@@ -146,7 +151,12 @@ export function SearchResult({ searchQuery, onBack }: SearchResultProps) {
                   >
                     <Card className="cursor-pointer hover:shadow-lg transition-all">
                       <CardContent className="p-6">
-                        <div className="aspect-video bg-blue-50 rounded-lg mb-4" />
+                        <TemplatePreview 
+                          template={{
+                            content: templates.find(t => t.categoryId === result.category.id)?.content || templates[0].content,
+                            title: result.title
+                          }} 
+                        />
                         <h3 className="font-semibold text-lg mb-2">{result.title}</h3>
                         <p className="text-slate-600 text-sm">{result.description}</p>
                         <div className="mt-4 flex items-center space-x-2">
