@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { SearchResult } from './SearchResult';
+import { categories } from '../../data/categories'; 
 
-export function SearchSection() {
+interface SearchSectionProps {
+  onCategorySelect: (category: typeof categories[0]) => void;
+}
+
+
+export function SearchSection({ onCategorySelect }: SearchSectionProps)  {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
@@ -66,7 +72,10 @@ export function SearchSection() {
           exit={{ opacity: 0 }}
           className="w-full"
         >
-          <SearchResult searchQuery={searchQuery} onBack={handleBack} />
+          <SearchResult 
+           searchQuery={searchQuery}
+           onBack={handleBack} 
+           onCategorySelect={onCategorySelect}/>
         </motion.div>
       )}
     </AnimatePresence>

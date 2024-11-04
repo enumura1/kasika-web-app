@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, MoreHorizontal, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from "./components/ui/card";
 import { SearchSection } from './components/search/SearchSection';
+import { CategoryTemplates } from './components/template/CategoryTemplates';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ const App = () => {
   const visibleCategories = categories.slice(0, 8);
   const hiddenCategories = categories.slice(8);
   const formatSectionRef = useRef<HTMLElement>(null);
+  const [selectedCategory, setSelectedCategory] = useState<typeof categories[0] | null>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -37,6 +39,10 @@ const App = () => {
     formatSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleCategoryClick = (category: typeof categories[0]) => {
+    setSelectedCategory(category);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* ヘッダー */}
@@ -47,46 +53,50 @@ const App = () => {
             <div className="flex items-center space-x-8">
               {/* ハンバーガーメニューとロゴ */}
               <div className="flex items-center space-x-4">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <button className="p-2 hover:bg-blue-50 rounded-lg transition-colors md:hidden">
-                      <Menu className="h-6 w-6 text-blue-600" />
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[300px] sm:left-0 sm:translate-x-0">
-                    <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-lg font-semibold text-slate-800">メニュー</h2>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="p-2 hover:bg-blue-50 rounded-lg transition-colors md:hidden">
+                    <Menu className="h-6 w-6 text-blue-600" />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[300px] sm:left-0 sm:translate-x-0">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-semibold text-slate-800">メニュー</h2>
+                  </div>
+                  <nav className="space-y-4">
+                    {/* モバイルメニューリンク */}
+                    <motion.a
+                      href="#"
+                      whileHover={{ x: 5, backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                      className="flex items-center space-x-2 p-2 rounded-lg cursor-pointer"
+                    >
+                      <span className="text-slate-700">使い方</span>
+                    </motion.a>
+                    {/* カテゴリー一覧 */}
+                    <div className="border-t border-blue-100 pt-4 mt-4">
+                      <h3 className="text-sm text-slate-500 px-2 mb-2">カテゴリー</h3>
+                      {categories.map((category) => (
+                        <motion.div
+                          key={category.id}
+                          onClick={() => handleCategoryClick(category)}
+                          whileHover={{ x: 5, backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                          className="flex items-center space-x-2 p-2 rounded-lg cursor-pointer"
+                        >
+                          <span>{category.icon}</span>
+                          <span className="text-slate-700">{category.name}</span>
+                        </motion.div>
+                      ))}
                     </div>
-                    <nav className="space-y-4">
-                      {/* モバイルメニューリンク */}
-                      <motion.a
-                        href="#"
-                        whileHover={{ x: 5, backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
-                        className="flex items-center space-x-2 p-2 rounded-lg cursor-pointer"
-                      >
-                        <span className="text-slate-700">使い方</span>
-                      </motion.a>
-                      {/* カテゴリー一覧 */}
-                      <div className="border-t border-blue-100 pt-4 mt-4">
-                        <h3 className="text-sm text-slate-500 px-2 mb-2">カテゴリー</h3>
-                        {categories.map((category) => (
-                          <motion.a
-                            key={category.id}
-                            whileHover={{ x: 5, backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
-                            className="flex items-center space-x-2 p-2 rounded-lg cursor-pointer"
-                          >
-                            <span>{category.icon}</span>
-                            <span className="text-slate-700">{category.name}</span>
-                          </motion.a>
-                        ))}
-                      </div>
-                    </nav>
-                  </DialogContent>
-                </Dialog>
+                  </nav>
+                </DialogContent>
+              </Dialog>
 
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                  カシカ
-                </h1>
+              <h1 
+                onClick={() => setSelectedCategory(null)}
+                className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                カシカ
+              </h1>
               </div>
 
               {/* デスクトップナビゲーションリンク */}
@@ -114,10 +124,10 @@ const App = () => {
                   <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-blue-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="py-2">
                       {categories.slice(0, 6).map((category) => (
-                        <a
+                        <div
                           key={category.id}
-                          href="#"
-                          className="flex items-center space-x-2 px-4 py-2 hover:bg-blue-50 transition-colors"
+                          onClick={() => handleCategoryClick(category)}
+                          className="flex items-center space-x-2 px-4 py-2 hover:bg-blue-50 transition-colors cursor-pointer"
                         >
                           <span className="w-8 h-8 flex items-center justify-center bg-blue-50 rounded-lg">
                             {category.icon}
@@ -126,7 +136,7 @@ const App = () => {
                             <span className="text-slate-700 font-medium">{category.name}</span>
                             <p className="text-xs text-slate-500">{category.description}</p>
                           </div>
-                        </a>
+                        </div>
                       ))}
                       <Dialog>
                         <DialogTrigger asChild>
@@ -141,10 +151,10 @@ const App = () => {
                           </h3>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {categories.map((category) => (
-                              <a
+                              <div
                                 key={category.id}
-                                href="#"
-                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors"
+                                onClick={() => handleCategoryClick(category)}
+                                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer"
                               >
                                 <span className="w-10 h-10 flex items-center justify-center bg-blue-50 rounded-lg">
                                   {category.icon}
@@ -153,7 +163,7 @@ const App = () => {
                                   <h4 className="font-medium text-slate-800">{category.name}</h4>
                                   <p className="text-sm text-slate-500">{category.description}</p>
                                 </div>
-                              </a>
+                              </div>
                             ))}
                           </div>
                         </DialogContent>
@@ -229,123 +239,143 @@ const App = () => {
 
       {/* メインコンテンツ */}
       <main className="container mx-auto px-4 py-12" ref={formatSectionRef}>
-        {/* 検索セクション */}
-        <SearchSection />
+        {selectedCategory ? (
+          <CategoryTemplates 
+            category={selectedCategory} 
+            onBack={() => setSelectedCategory(null)} 
+          />
+          ) : (
+          <>
+            {/* 検索セクション */}
+            <SearchSection onCategorySelect={handleCategoryClick} />
 
         {/* フォーマットセクション */}
-        <section >
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-semibold text-slate-800">
-              人気の図解フォーマット
-            </h3>
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="text-blue-500 hover:text-blue-600 flex items-center space-x-1">
-                  <span>すべて見る</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[800px]">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-                  {categories.map((category) => (
-                    <Card key={category.id} className="cursor-pointer hover:shadow-md transition-all">
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{category.icon}</span>
-                          <div>
-                            <h4 className="font-semibold">{category.name}</h4>
-                            <p className="text-sm text-slate-500">{category.templateCount} テンプレート</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+        <section>
+  <div className="flex justify-between items-center mb-8">
+    <h3 className="text-xl font-semibold text-slate-800">
+      人気の図解フォーマット
+    </h3>
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="text-blue-500 hover:text-blue-600 flex items-center space-x-1">
+          <span>すべて見る</span>
+          <ArrowRight className="h-4 w-4" />
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[800px]">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              onClick={() => handleCategoryClick(category)}
+              className="cursor-pointer hover:shadow-md transition-all"
+            >
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-2xl">{category.icon}</span>
+                    <div>
+                      <h4 className="font-semibold">{category.name}</h4>
+                      <p className="text-sm text-slate-500">{category.templateCount} テンプレート</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  </div>
+
+  <motion.div 
+    variants={containerVariants}
+    initial="hidden"
+    animate="visible"
+    className="grid grid-cols-1 md:grid-cols-3 gap-6"
+  >
+    {visibleCategories.map((category) => (
+      <motion.div
+        key={category.id}
+        variants={itemVariants}
+        whileHover={{ y: -5 }}
+        transition={{ type: "spring", stiffness: 300 }}
+        onClick={() => handleCategoryClick(category)}
+      >
+        <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="bg-blue-50 p-3 rounded-xl">
+                <span className="text-3xl">{category.icon}</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">
+                  {category.name}
+                </h3>
+                <p className="text-sm text-blue-500">
+                  {category.templateCount} テンプレート
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    ))}
+
+    {hiddenCategories.length > 0 && (
+      <motion.div
+        variants={itemVariants}
+        whileHover={{ y: -5 }}
+        transition={{ type: "spring", stiffness: 300 }}
+      >
+        <Dialog>
+          <DialogTrigger asChild>
+            <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-4">
+                  <div className="bg-blue-100 p-3 rounded-xl">
+                    <MoreHorizontal className="h-8 w-8 text-blue-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      その他
+                    </h3>
+                    <p className="text-sm text-blue-500">
+                      {hiddenCategories.length} カテゴリー
+                    </p>
+                  </div>
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            {visibleCategories.map((category) => (
-              <motion.div
-                key={category.id}
-                variants={itemVariants}
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="bg-blue-50 p-3 rounded-xl">
-                        <span className="text-3xl">{category.icon}</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-800">
-                          {category.name}
-                        </h3>
-                        <p className="text-sm text-blue-500">
-                          {category.templateCount} テンプレート
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-
-            {hiddenCategories.length > 0 && (
-              <motion.div
-                variants={itemVariants}
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-                      <CardContent className="p-6">
-                        <div className="flex items-center space-x-4">
-                          <div className="bg-blue-100 p-3 rounded-xl">
-                            <MoreHorizontal className="h-8 w-8 text-blue-500" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold text-slate-800">
-                              その他
-                            </h3>
-                            <p className="text-sm text-blue-500">
-                              {hiddenCategories.length} カテゴリー
-                            </p>
-                          </div>
+              </CardContent>
+            </Card>
+          </DialogTrigger>
+          <DialogContent>
+            <div className="grid grid-cols-1 gap-4 p-4">
+              {hiddenCategories.map((category) => (
+                <div
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category)}
+                  className="cursor-pointer hover:shadow-md transition-all"
+                >
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">{category.icon}</span>
+                        <div>
+                          <h4 className="font-semibold">{category.name}</h4>
+                          <p className="text-sm text-slate-500">{category.description}</p>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <div className="grid grid-cols-1 gap-4 p-4">
-                      {hiddenCategories.map((category) => (
-                        <Card key={category.id} className="cursor-pointer hover:shadow-md transition-all">
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <span className="text-2xl">{category.icon}</span>
-                              <div>
-                                <h4 className="font-semibold">{category.name}</h4>
-                                <p className="text-sm text-slate-500">{category.description}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </motion.div>
-            )}
-          </motion.div>
-        </section>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </motion.div>
+    )}
+  </motion.div>
+</section>
 
         {/* 使い方セクション */}
         <section className="mt-20">
@@ -456,6 +486,8 @@ const App = () => {
             </CardContent>
           </Card>
         </section>
+        </>
+  )}
       </main>
 
       {/* フッター */}
