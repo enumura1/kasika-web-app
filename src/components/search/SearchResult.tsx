@@ -82,30 +82,32 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
 
   // APIリクエストを行う関数
   const fetchRecommendedTemplates = async (query: string): Promise<APIResponse> => {
-    // TODO: 実際のAPIエンドポイントに置き換え
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // クエリに応じて異なる結果を返すモック実装
-    if (query.toLowerCase().includes('プロジェクト')) {
+    try {
+      const response = await fetch(import.meta.env.VITE_API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': import.meta.env.VITE_API_KEY
+        },
+        body: JSON.stringify({
+          user_input: query
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+  
+      const data = await response.json();
       return {
-        matched_id_1: "1-1", // プロジェクト管理関連
-        matched_id_2: "1-2",
-        matched_id_3: "1-3"
+        matched_id_1: data.matched_id_1,
+        matched_id_2: data.matched_id_2,
+        matched_id_3: data.matched_id_3
       };
-    } else if (query.toLowerCase().includes('組織')) {
-      return {
-        matched_id_1: "3-1", // 組織図関連
-        matched_id_2: "3-2",
-        matched_id_3: "3-3"
-      };
+    } catch (error) {
+      console.error('API request failed:', error);
+      throw error;
     }
-    
-    // モックレスポンス（実在するテンプレートIDを使用）
-    return {
-      matched_id_1: "1-1",
-      matched_id_2: "5-2",
-      matched_id_3: "7-3"
-    };
   };
 
   // 検索結果を生成する関数
@@ -153,6 +155,11 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
         // 検索結果の生成
         const searchResults = generateSearchResults(apiResponse, templates);
 
+        if (searchResults.length === 0) {
+          setError('検索結果が見つかりませんでした。別のキーワードをお試しください。');
+          return;
+        }
+
         // 関連カテゴリーの設定
         const usedCategoryIds = searchResults.map(result => result.category.id);
         const availableCategories = categories.filter(c => !usedCategoryIds.includes(c.id));
@@ -174,18 +181,20 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
   }, [searchQuery, templates]);
 
   if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center">
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-md mx-auto bg-red-50 border border-red-200 rounded-xl p-6 text-center">
         <div className="text-red-600 mb-4">{error}</div>
         <button
           onClick={onBack}
           className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
         >
-          戻る
+          検索画面に戻る
         </button>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <motion.div
