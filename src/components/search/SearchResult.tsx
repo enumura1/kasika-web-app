@@ -3,26 +3,37 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '../ui/card';
 import { ArrowLeft, Search } from 'lucide-react';
 import { categories } from '../../data/categories';
-
 import { TemplatePreview } from '../template/TemplatePreview';
-import { useTemplates } from '../../hooks/useTemplates';
 
+// Template型の定義
+type Template = {
+  id: string;           // テンプレートID (例: "1-1")
+  summary: string;      // テンプレートの説明
+  categoryId: number;   // 関連するカテゴリーID
+  content: string;      // SVGコンテンツ
+};
+
+// APIレスポンスの型定義
+type APIResponse = {
+  matched_id_1: string;
+  matched_id_2: string;
+  matched_id_3: string;
+};
 
 // 検索結果の型定義
 type SearchResult = {
-  formatId: number;
+  templateId: string;
   title: string;
   description: string;
   category: typeof categories[0];
-  svg: string;
+  templateContent: string;
 };
 
 interface SearchResultProps {
   searchQuery: string;
   onBack: () => void;
-  onCategorySelect?: (category: typeof categories[0]) => void;  // オプショナルに
+  onCategorySelect?: (category: typeof categories[0]) => void;
 }
-
 
 // スケルトンローダーコンポーネント
 const SkeletonLoader = () => (
@@ -46,59 +57,135 @@ const SkeletonLoader = () => (
   </div>
 );
 
-export function SearchResult({ searchQuery, onBack,  onCategorySelect = () => {} }: SearchResultProps) {
+export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} }: SearchResultProps) {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [relatedCategories, setRelatedCategories] = useState<typeof categories>([]);
-  const { templates } = useTemplates();
+  const [templates, setTemplates] = useState<Template[]>([]);
 
-  // 疑似的な検索処理
+  // テンプレートデータの取得
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await fetch('/templates.json');
+        const data = await response.json();
+        setTemplates(data.templates);
+      } catch (err) {
+        console.error('Failed to load templates:', err);
+        setError('テンプレートの読み込みに失敗しました');
+      }
+    };
+    
+    fetchTemplates();
+  }, []);
+
+  // APIリクエストを行う関数
+  const fetchRecommendedTemplates = async (query: string): Promise<APIResponse> => {
+    // TODO: 実際のAPIエンドポイントに置き換え
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // クエリに応じて異なる結果を返すモック実装
+    if (query.toLowerCase().includes('プロジェクト')) {
+      return {
+        matched_id_1: "1-1", // プロジェクト管理関連
+        matched_id_2: "1-2",
+        matched_id_3: "1-3"
+      };
+    } else if (query.toLowerCase().includes('組織')) {
+      return {
+        matched_id_1: "3-1", // 組織図関連
+        matched_id_2: "3-2",
+        matched_id_3: "3-3"
+      };
+    }
+    
+    // モックレスポンス（実在するテンプレートIDを使用）
+    return {
+      matched_id_1: "1-1",
+      matched_id_2: "5-2",
+      matched_id_3: "7-3"
+    };
+  };
+
+  // 検索結果を生成する関数
+  const generateSearchResults = (
+    apiResponse: APIResponse, 
+    templates: Template[]
+  ): SearchResult[] => {
+    const templateIds = [
+      apiResponse.matched_id_1,
+      apiResponse.matched_id_2,
+      apiResponse.matched_id_3
+    ];
+
+    return templateIds
+      .map(templateId => {
+        const template = templates.find(t => t.id === templateId);
+        if (!template) return null;
+
+        const category = categories.find(c => c.id === template.categoryId);
+        if (!category) return null;
+
+        return {
+          templateId,
+          title: template.summary,
+          description: category.description,
+          category,
+          templateContent: template.content
+        };
+      })
+      .filter((result): result is SearchResult => result !== null);
+  };
+
+  // 検索実行の副作用
   useEffect(() => {
     const fetchResults = async () => {
-      setLoading(true);
-      // 擬似的な遅延
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // ランダムにカテゴリを選択
-      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+      if (!templates.length) return;
       
-      // 疑似的な検索結果を生成
-      const mockResults: SearchResult[] = [
-        {
-          formatId: 1,
-          title: `${randomCategory.name}のフローチャート`,
-          description: "プロセスを視覚的に表現",
-          category: randomCategory,
-          svg: "/* SVG string */"
-        },
-        {
-          formatId: 2,
-          title: `${randomCategory.name}のマインドマップ`,
-          description: "アイデアを構造化",
-          category: randomCategory,
-          svg: "/* SVG string */"
-        },
-        {
-          formatId: 3,
-          title: `${randomCategory.name}の概念図`,
-          description: "関係性を明確に表現",
-          category: randomCategory,
-          svg: "/* SVG string */"
-        }
-      ];
+      setLoading(true);
+      setError(null);
 
-      // ランダムに関連カテゴリを選択
-      const shuffledCategories = [...categories]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
+      try {
+        // APIリクエスト
+        const apiResponse = await fetchRecommendedTemplates(searchQuery);
+        
+        // 検索結果の生成
+        const searchResults = generateSearchResults(apiResponse, templates);
 
-      setResults(mockResults);
-      setRelatedCategories(shuffledCategories);
-      setLoading(false);
+        // 関連カテゴリーの設定
+        const usedCategoryIds = searchResults.map(result => result.category.id);
+        const availableCategories = categories.filter(c => !usedCategoryIds.includes(c.id));
+        const shuffledCategories = availableCategories
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+
+        setResults(searchResults);
+        setRelatedCategories(shuffledCategories);
+      } catch (err) {
+        setError('検索中にエラーが発生しました。もう一度お試しください。');
+        console.error('Search error:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchResults();
-  }, [searchQuery]);
+  }, [searchQuery, templates]);
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="text-red-600 mb-4">{error}</div>
+        <button
+          onClick={onBack}
+          className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+        >
+          戻る
+        </button>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -142,12 +229,12 @@ export function SearchResult({ searchQuery, onBack,  onCategorySelect = () => {}
             {/* 推奨フォーマット */}
             <section>
               <h2 className="text-xl font-semibold text-slate-800 mb-6">
-                推奨フォーマット
+                推奨フォーマット {results.length === 0 && "(該当なし)"}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {results.map((result) => (
                   <motion.div
-                    key={result.formatId}
+                    key={result.templateId}
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
@@ -155,7 +242,7 @@ export function SearchResult({ searchQuery, onBack,  onCategorySelect = () => {}
                       <CardContent className="p-6">
                         <TemplatePreview 
                           template={{
-                            content: templates.find(t => t.categoryId === result.category.id)?.content || templates[0].content,
+                            content: result.templateContent,
                             title: result.title
                           }} 
                         />
@@ -184,8 +271,10 @@ export function SearchResult({ searchQuery, onBack,  onCategorySelect = () => {}
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Card className="cursor-pointer hover:shadow-lg transition-all"
-                      onClick={() => onCategorySelect && onCategorySelect(category)}>
+                    <Card 
+                      className="cursor-pointer hover:shadow-lg transition-all"
+                      onClick={() => onCategorySelect(category)}
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{category.icon}</span>

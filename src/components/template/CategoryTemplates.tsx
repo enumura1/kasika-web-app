@@ -13,15 +13,8 @@ interface CategoryTemplatesProps {
 export function CategoryTemplates({ category, onBack }: CategoryTemplatesProps) {
   const { templates } = useTemplates();
   
-  // カテゴリーに対応するテンプレートのタイトルバリエーション
-  const templateVariations = [
-    { title: `${category.name}のフローチャート`, description: "プロセスを視覚的に表現" },
-    { title: `${category.name}のマインドマップ`, description: "アイデアを構造化" },
-    { title: `${category.name}の概念図`, description: "関係性を明確に表現" },
-    { title: `${category.name}の比較図`, description: "要素の比較を可視化" },
-    { title: `${category.name}のタイムライン`, description: "時系列での表現" },
-    { title: `${category.name}のマトリックス`, description: "多次元での分析" }
-  ];
+  // 現在のカテゴリーに属するテンプレートのみをフィルタリング
+  const categoryTemplates = templates.filter(t => t.categoryId === category.id);
 
   return (
     <motion.div
@@ -51,9 +44,9 @@ export function CategoryTemplates({ category, onBack }: CategoryTemplatesProps) 
 
       {/* テンプレート一覧 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templateVariations.map((template, index) => (
+        {categoryTemplates.map((template, index) => (
           <motion.div
-            key={index}
+            key={template.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
@@ -62,17 +55,26 @@ export function CategoryTemplates({ category, onBack }: CategoryTemplatesProps) 
               <CardContent className="p-6">
                 <TemplatePreview 
                   template={{
-                    content: templates?.[0]?.content || '',
-                    title: template.title
+                    content: template.content,
+                    title: template.summary
                   }} 
                 />
-                <h3 className="font-semibold text-lg mt-4 mb-2">{template.title}</h3>
-                <p className="text-slate-600 text-sm">{template.description}</p>
+                <h3 className="font-semibold text-lg mt-4 mb-2">{template.summary}</h3>
+                <p className="text-slate-600 text-sm">{category.description}</p>
               </CardContent>
             </Card>
           </motion.div>
         ))}
       </div>
+
+      {/* テンプレートが存在しない場合 */}
+      {categoryTemplates.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-slate-600">
+            このカテゴリーのテンプレートは準備中です。
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 }
