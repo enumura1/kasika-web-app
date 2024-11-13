@@ -506,7 +506,7 @@ export const HomePage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">カシカについて</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white">概要</a></li>
+                <li><a href="/usage" className="hover:text-white">概要</a></li>
                 <li><a href="#" className="hover:text-white">利用規約</a></li>
                 <li><a href="#" className="hover:text-white">プライバシーポリシー</a></li>
               </ul>
@@ -514,9 +514,15 @@ export const HomePage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">機能</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white">図解フォーマット</a></li>
+              <li>
+                <motion.a
+                  className="hover:text-white cursor-pointer"
+                  onClick={() => formatSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  図解フォーマット
+                </motion.a>
+              </li>
                 <li><a href="#" className="hover:text-white">AI支援機能</a></li>
-                <li><a href="#" className="hover:text-white">テンプレート</a></li>
               </ul>
             </div>
             <div>
