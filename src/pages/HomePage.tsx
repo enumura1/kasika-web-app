@@ -16,6 +16,7 @@ export const HomePage = () => {
   const visibleCategories = categories.slice(0, 8);
   const hiddenCategories = categories.slice(8);
   const formatSectionRef = useRef<HTMLElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<typeof categories[0] | null>(null);
 
   const containerVariants = {
@@ -42,6 +43,13 @@ export const HomePage = () => {
 
   const handleCategoryClick = (category: typeof categories[0]) => {
     setSelectedCategory(category);
+  };
+
+  const handleAIAssistClick = () => {
+    searchInputRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 500);
   };
 
   return (
@@ -256,7 +264,10 @@ export const HomePage = () => {
           ) : (
           <>
             {/* 検索セクション */}
-            <SearchSection onCategorySelect={handleCategoryClick} />
+            <SearchSection 
+              onCategorySelect={handleCategoryClick} 
+              inputRef={searchInputRef}  // 追加
+            />
 
         {/* フォーマットセクション */}
         <section>
@@ -522,7 +533,12 @@ export const HomePage = () => {
                   図解フォーマット
                 </motion.a>
               </li>
-                <li><a href="#" className="hover:text-white">AI支援機能</a></li>
+                <li><motion.a
+                  className="hover:text-white cursor-pointer"
+                  onClick={handleAIAssistClick}
+                >
+                  AI支援機能
+                </motion.a></li>
               </ul>
             </div>
             <div>

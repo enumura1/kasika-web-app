@@ -6,10 +6,11 @@ import { categories } from '../../data/categories';
 
 interface SearchSectionProps {
   onCategorySelect: (category: typeof categories[0]) => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 
-export function SearchSection({ onCategorySelect }: SearchSectionProps)  {
+export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps)  {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
@@ -45,6 +46,7 @@ export function SearchSection({ onCategorySelect }: SearchSectionProps)  {
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
               <input
+                ref={inputRef}
                 type="text"
                 placeholder="例：新規事業の立ち上げプロセスを説明したい..."
                 className="w-full pl-12 pr-24 py-3 border border-blue-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 bg-white shadow-sm"
