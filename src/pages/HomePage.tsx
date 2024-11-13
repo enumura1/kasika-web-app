@@ -517,7 +517,7 @@ export const HomePage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">カシカについて</h4>
               <ul className="space-y-2">
-                <li><a href="/usage" className="hover:text-white">概要</a></li>
+                <li><a href="/usage" className="hover:text-white">使い方</a></li>
                 <li><a href="#" className="hover:text-white">利用規約</a></li>
                 <li><a href="#" className="hover:text-white">プライバシーポリシー</a></li>
               </ul>
@@ -546,7 +546,6 @@ export const HomePage = () => {
               <ul className="space-y-2">
                 <li><a href="#" className="hover:text-white">ヘルプ</a></li>
                 <li><a href="#" className="hover:text-white">お問い合わせ</a></li>
-                <li><a href="#" className="hover:text-white">フィードバック</a></li>
               </ul>
             </div>
             <div>
