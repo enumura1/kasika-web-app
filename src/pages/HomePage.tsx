@@ -2,14 +2,15 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, MoreHorizontal, ArrowRight } from 'lucide-react';
 import { Link } from '@tanstack/react-router'
-import { Card, CardContent } from "../components/ui/card";  // パスを修正
-import { SearchSection } from '../components/search/SearchSection';  // パスを修正
-import { CategoryTemplates } from '../components/template/CategoryTemplates';  // パスを修正
+import { Card, CardContent } from "../components/ui/card";
+import { SearchSection } from '../components/search/SearchSection';
+import { CategoryTemplates } from '../components/template/CategoryTemplates';
+import { ScrollToTop } from '../components/ui/scroll-to-top';
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
-} from "../components/ui/dialog";  // パスを修正
+} from "../components/ui/dialog";
 import { categories } from "../data/categories";
 
 export const HomePage = () => {
@@ -54,6 +55,7 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+       <ScrollToTop />
       {/* ヘッダー */}
       <header className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-sm">
         <div className="container mx-auto px-4">
