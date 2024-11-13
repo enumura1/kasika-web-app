@@ -546,9 +546,23 @@ export const HomePage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">サポート</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white">ヘルプ</a></li>
-                <li><a href="#" className="hover:text-white">お問い合わせ</a></li>
-              </ul>
+                <li>
+                  <Link 
+                    to="/support"
+                    className="hover:text-white cursor-pointer" 
+                  >
+                    QA
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/support"
+                    className="hover:text-white cursor-pointer"
+                  >
+                    お問い合わせ
+                  </Link>
+                </li>
+              </ul>  
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">ソーシャル</h4>

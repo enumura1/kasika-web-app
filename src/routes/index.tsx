@@ -6,7 +6,8 @@ import {
   } from '@tanstack/react-router'
   import { HomePage } from '../pages/HomePage';
   import { UsagePage } from '../pages/UsagePage'
-  
+  import { SupportPage } from '../pages/SupportPage'; 
+
   // ルートの定義を最新の書き方に修正
   const rootRoute = createRootRoute()
   
@@ -21,9 +22,19 @@ import {
     path: '/usage',
     component: UsagePage
   })
+
+  const supportRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/support',
+    component: SupportPage
+  });
   
   // ルートツリーの作成
-  const routeTree = rootRoute.addChildren([indexRoute, usageRoute])
+  const routeTree = rootRoute.addChildren([
+    indexRoute,
+    supportRoute,
+     usageRoute
+  ])
   
   // ルーターの作成
   export const router = createRouter({
