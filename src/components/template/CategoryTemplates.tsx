@@ -56,7 +56,8 @@ export function CategoryTemplates({ category, onBack }: CategoryTemplatesProps) 
                 <TemplatePreview 
                   template={{
                     content: template.content,
-                    title: template.summary
+                    title: template.summary,
+                    id:template.id
                   }} 
                 />
                 <h3 className="font-semibold text-lg mt-4 mb-2">{template.summary}</h3>
