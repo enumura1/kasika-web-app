@@ -2,20 +2,22 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu, MoreHorizontal, ArrowRight } from 'lucide-react';
 import { Link } from '@tanstack/react-router'
-import { Card, CardContent } from "../components/ui/card";  // パスを修正
-import { SearchSection } from '../components/search/SearchSection';  // パスを修正
-import { CategoryTemplates } from '../components/template/CategoryTemplates';  // パスを修正
+import { Card, CardContent } from "../components/ui/card";
+import { SearchSection } from '../components/search/SearchSection';
+import { CategoryTemplates } from '../components/template/CategoryTemplates';
+import { ScrollToTop } from '../components/ui/scroll-to-top';
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
-} from "../components/ui/dialog";  // パスを修正
+} from "../components/ui/dialog";
 import { categories } from "../data/categories";
 
 export const HomePage = () => {
   const visibleCategories = categories.slice(0, 8);
   const hiddenCategories = categories.slice(8);
   const formatSectionRef = useRef<HTMLElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<typeof categories[0] | null>(null);
 
   const containerVariants = {
@@ -44,8 +46,16 @@ export const HomePage = () => {
     setSelectedCategory(category);
   };
 
+  const handleAIAssistClick = () => {
+    searchInputRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+       <ScrollToTop />
       {/* ヘッダー */}
       <header className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-sm">
         <div className="container mx-auto px-4">
@@ -256,7 +266,10 @@ export const HomePage = () => {
           ) : (
           <>
             {/* 検索セクション */}
-            <SearchSection onCategorySelect={handleCategoryClick} />
+            <SearchSection 
+              onCategorySelect={handleCategoryClick} 
+              inputRef={searchInputRef}  // 追加
+            />
 
         {/* フォーマットセクション */}
         <section>
@@ -506,7 +519,7 @@ export const HomePage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">カシカについて</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white">概要</a></li>
+                <li><a href="/usage" className="hover:text-white">使い方</a></li>
                 <li><a href="#" className="hover:text-white">利用規約</a></li>
                 <li><a href="#" className="hover:text-white">プライバシーポリシー</a></li>
               </ul>
@@ -514,18 +527,42 @@ export const HomePage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">機能</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white">図解フォーマット</a></li>
-                <li><a href="#" className="hover:text-white">AI支援機能</a></li>
-                <li><a href="#" className="hover:text-white">テンプレート</a></li>
+              <li>
+                <motion.a
+                  className="hover:text-white cursor-pointer"
+                  onClick={() => formatSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  図解フォーマット
+                </motion.a>
+              </li>
+                <li><motion.a
+                  className="hover:text-white cursor-pointer"
+                  onClick={handleAIAssistClick}
+                >
+                  AI支援機能
+                </motion.a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">サポート</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white">ヘルプ</a></li>
-                <li><a href="#" className="hover:text-white">お問い合わせ</a></li>
-                <li><a href="#" className="hover:text-white">フィードバック</a></li>
-              </ul>
+                <li>
+                  <Link 
+                    to="/support"
+                    className="hover:text-white cursor-pointer" 
+                  >
+                    QA
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/support"
+                    className="hover:text-white cursor-pointer"
+                  >
+                    お問い合わせ
+                  </Link>
+                </li>
+              </ul>  
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">ソーシャル</h4>
