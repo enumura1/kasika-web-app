@@ -90,10 +90,14 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
           <div className="w-full aspect-video bg-white rounded-lg border border-slate-200">
             <SvgViewer content={template.content} className="w-full h-full" />
           </div>
-          <div className="mt-6 flex justify-center items-center gap-4">
+          <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="shadow-sm">
+                <Button 
+                  size="lg"
+                  variant="outline" 
+                  className="w-full sm:w-[160px] h-12 rounded-xl font-semibold shadow-sm"
+                >
                   <Download className="h-4 w-4 mr-2" />
                   ダウンロード
                 </Button>
@@ -111,13 +115,17 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <Link
-              to={`/editor/${template.id}`}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+            <Button
+              asChild
+              size="lg"
+              variant="default"
+              className="w-full sm:w-[160px] h-12 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold shadow-sm"
             >
-              <Edit className="h-4 w-4 mr-2" />
-              テンプレートを編集
-            </Link>
+              <Link to={`/editor/${template.id}`}>
+                <Edit className="h-4 w-4 mr-2" />
+                編集する
+              </Link>
+            </Button>
           </div>
         </div>
       </DialogContent>

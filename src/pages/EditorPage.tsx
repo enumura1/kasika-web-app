@@ -1,4 +1,4 @@
-import { ArrowLeft, Download, ZoomIn, ZoomOut, Grid } from 'lucide-react';
+import { ArrowLeft, Download, ZoomIn, ZoomOut, Grid, Undo, Redo } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Card, CardContent } from '../components/ui/card';
@@ -42,6 +42,8 @@ export function EditorPage() {
   const [zoom, setZoom] = useState(100);
   const [showGrid, setShowGrid] = useState(false);
   const [exportFormat, setExportFormat] = useState<'svg'|'webp'|'png'>('webp');
+  const [history, setHistory] = useState<Array<string>>([]);  // SVGの状態履歴
+  const [currentIndex, setCurrentIndex] = useState(-1);       // 現在の履歴インデックス
 
   useEffect(() => {
     const loadTemplate = async () => {
@@ -55,8 +57,11 @@ export function EditorPage() {
           setError('テンプレートが見つかりませんでした');
           return;
         }
-
+  
         setTemplate(targetTemplate.content);
+        // 履歴を初期化
+        setHistory([targetTemplate.content]);
+        setCurrentIndex(0);
       } catch (err) {
         setError('テンプレートの読み込みに失敗しました');
         console.error('Failed to load template:', err);
@@ -64,7 +69,7 @@ export function EditorPage() {
         setLoading(false);
       }
     };
-
+  
     loadTemplate();
   }, [params.templateId]);
 
@@ -94,6 +99,7 @@ export function EditorPage() {
       (element as SVGElement).setAttribute(key, value);
     }
   
+    // 状態を更新
     setSelectedElement(prev => {
       if (!prev) return null;
       if (key === 'textContent') {
@@ -105,7 +111,13 @@ export function EditorPage() {
       };
     });
   
+    // 新しいSVGの状態を取得
     const updatedSvgData = new XMLSerializer().serializeToString(svgRef.current);
+
+    // 履歴に追加（現在の状態以降の履歴を削除して新しい状態を追加）
+    setHistory(prev => [...prev.slice(0, currentIndex + 1), updatedSvgData]);
+    setCurrentIndex(prev => prev + 1);
+    
     setTemplate(updatedSvgData);
   };
 
@@ -176,6 +188,26 @@ export function EditorPage() {
   const handleZoomIn = () => setZoom(prev => Math.min(200, prev + 25));
   const handleZoomOut = () => setZoom(prev => Math.max(25, prev - 25));
 
+  const handleUndo = () => {
+    if (currentIndex <= 0) return;
+    
+    const previousState = history[currentIndex - 1];
+    setCurrentIndex(prev => prev - 1);
+    setTemplate(previousState);
+  };
+  
+  const handleRedo = () => {
+    if (currentIndex >= history.length - 1) return;
+    
+    const nextState = history[currentIndex + 1];
+    setCurrentIndex(prev => prev + 1);
+    setTemplate(nextState);
+  };
+  
+  // Undo/Redoが可能かどうかのフラグ
+  const canUndo = currentIndex > 0;
+  const canRedo = currentIndex < history.length - 1;
+
   if (error) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -212,49 +244,75 @@ export function EditorPage() {
           <div className="md:col-span-2">
           <Card>
             <CardContent className="p-2 md:p-4">
-                {/* ツールバーをフローに戻す */}
                 <div className="flex flex-col space-y-2 md:space-y-4">
-                {/* ツールバー */}
-                <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center space-x-2">
-                    <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
+                    <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-1.5">
+                        <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
                         <Button variant="ghost" size="sm" onClick={handleZoomOut}>
-                        <ZoomOut className="h-4 w-4" />
+                            <ZoomOut className="h-4 w-4" />
                         </Button>
-                        <span className="text-sm font-medium w-12 text-center">{zoom}%</span>
+                        <span className="text-sm font-medium w-9 text-center">{zoom}%</span>
                         <Button variant="ghost" size="sm" onClick={handleZoomIn}>
-                        <ZoomIn className="h-4 w-4" />
+                            <ZoomIn className="h-4 w-4" />
                         </Button>
-                    </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowGrid(!showGrid)}
-                        className={`tooltip-bottom ${showGrid ? 'bg-blue-100' : ''}`}
-                        data-tooltip="補助線の表示/非表示"
-                        >
-                        <Grid className="h-4 w-4" />
-                    </Button>
+                        </div>
+
+                        <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={handleUndo}
+                                disabled={!canUndo}
+                                className="tooltip-bottom px-1"
+                                data-tooltip="元に戻す"
+                            >
+                                <Undo className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={handleRedo}
+                                disabled={!canRedo}
+                                className="tooltip-bottom px-1"
+                                data-tooltip="やり直す"
+                            >
+                                <Redo className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowGrid(!showGrid)}
+                            className={`tooltip-bottom px-1 ${showGrid ? 'bg-blue-100' : ''}`}
+                            data-tooltip="補助線の表示/非表示"
+                            >
+                            <Grid className="h-4 w-4" />
+                        </Button>
                     </div>
 
                     <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        エクスポート
+                        <DropdownMenuTrigger asChild>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="px-2"
+                        >
+                            <Download className="h-4 w-4" />
+                            <span className="ml-1.5 hidden md:inline">エクスポート</span>
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => {setExportFormat('svg'); handleDownload();}}>
-                        SVGとして保存
+                            SVGとして保存
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {setExportFormat('webp'); handleDownload();}}>
-                        WebPとして保存
+                            WebPとして保存
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {setExportFormat('png'); handleDownload();}}>
-                        PNGとして保存
+                            PNGとして保存
                         </DropdownMenuItem>
-                    </DropdownMenuContent>
+                        </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
 
