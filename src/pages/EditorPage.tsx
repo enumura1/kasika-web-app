@@ -197,118 +197,122 @@ export function EditorPage() {
       <header className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link 
-              to="/"
-              className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
-            >
+            <Link to="/" className="p-2 hover:bg-blue-50 rounded-lg transition-colors">
               <ArrowLeft className="h-6 w-6 text-blue-600" />
             </Link>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
               図解エディター
             </h1>
           </div>
-
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 bg-slate-100 rounded-lg p-1">
-              <Button variant="ghost" size="sm" onClick={handleZoomOut}>
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium">{zoom}%</span>
-              <Button variant="ghost" size="sm" onClick={handleZoomIn}>
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowGrid(!showGrid)}
-              className={showGrid ? 'bg-blue-100' : ''}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-blue-600 text-white">
-                  <Download className="h-4 w-4 mr-2" />
-                  エクスポート
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => {setExportFormat('svg'); handleDownload();}}>
-                  SVG形式
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {setExportFormat('webp'); handleDownload();}}>
-                  WebP形式
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {setExportFormat('png'); handleDownload();}}>
-                  PNG形式
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-3 gap-8">
-          <div className="col-span-2">
-            <Card>
-              <CardContent className="p-4 overflow-hidden">
-                <div 
-                  className={`aspect-video bg-white rounded-lg border-2 border-dashed border-slate-200 relative overflow-auto ${
-                    showGrid ? 'bg-grid bg-opacity-10' : ''
-                  }`}
-                  style={{
-                    transform: `scale(${zoom/100})`,
-                    transformOrigin: 'top left'
-                  }}
-                >
-                  {loading ? (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+      <main className="container mx-auto px-4 py-4 md:py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+          <div className="md:col-span-2">
+          <Card>
+            <CardContent className="p-2 md:p-4">
+                {/* ツールバーをフローに戻す */}
+                <div className="flex flex-col space-y-2 md:space-y-4">
+                {/* ツールバー */}
+                <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
+                        <Button variant="ghost" size="sm" onClick={handleZoomOut}>
+                        <ZoomOut className="h-4 w-4" />
+                        </Button>
+                        <span className="text-sm font-medium w-12 text-center">{zoom}%</span>
+                        <Button variant="ghost" size="sm" onClick={handleZoomIn}>
+                        <ZoomIn className="h-4 w-4" />
+                        </Button>
                     </div>
-                  ) : template ? (
-                    <div ref={containerRef} className="w-full h-full">
-                      <SvgRenderer 
-                        content={template} 
-                        onRef={handleSvgRef}
-                        onElementSelect={handleElementSelect}
-                        onElementChange={handleElementChange}
-                      />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowGrid(!showGrid)}
+                        className={`tooltip-bottom ${showGrid ? 'bg-blue-100' : ''}`}
+                        data-tooltip="補助線の表示/非表示"
+                        >
+                        <Grid className="h-4 w-4" />
+                    </Button>
                     </div>
-                  ) : null}
+
+                    <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-2" />
+                        エクスポート
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => {setExportFormat('svg'); handleDownload();}}>
+                        SVGとして保存
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {setExportFormat('webp'); handleDownload();}}>
+                        WebPとして保存
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {setExportFormat('png'); handleDownload();}}>
+                        PNGとして保存
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-              </CardContent>
+
+                {/* キャンバス */}
+                <div className="overflow-auto bg-white rounded-lg border-2 border-dashed border-slate-200">
+                    <div 
+                    className={`aspect-video ${showGrid ? 'bg-grid bg-opacity-10' : ''}`}
+                    style={{
+                        transform: `scale(${zoom/100})`,
+                        transformOrigin: '0 0',
+                        width: `${100 * (100/zoom)}%`,
+                        height: `${100 * (100/zoom)}%`,
+                        minWidth: '100%',
+                        minHeight: '100%'
+                    }}
+                    >
+                    {loading ? (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                        </div>
+                    ) : template ? (
+                        <div ref={containerRef} className="w-full h-full">
+                        <SvgRenderer 
+                            content={template} 
+                            onRef={handleSvgRef}
+                            onElementSelect={handleElementSelect}
+                            onElementChange={handleElementChange}
+                        />
+                        </div>
+                    ) : null}
+                    </div>
+                </div>
+                </div>
+            </CardContent>
             </Card>
           </div>
-
-          <div className="col-span-1">
-            <Tabs defaultValue="properties">
+  
+          {/* 右側：プロパティパネル */}
+          <div className="md:col-span-1">
+            <Tabs defaultValue="properties" className="sticky top-20">
               <TabsList className="w-full">
                 <TabsTrigger value="properties" className="flex-1">プロパティ</TabsTrigger>
                 <TabsTrigger value="style" className="flex-1">スタイル</TabsTrigger>
               </TabsList>
-
+  
               <TabsContent value="properties">
                 <Card>
                   <CardContent className="p-4">
                     {selectedElement ? (
                       <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">
-                            要素の種類
-                          </label>
-                          <div className="text-slate-600">
-                            {selectedElement.type}
-                          </div>
+                        <div className="text-sm text-slate-500 pb-2 border-b">
+                          選択中の要素: {selectedElement.type}
                         </div>
-
+  
                         {selectedElement.type === 'text' && (
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                              テキスト
+                              テキスト内容
                             </label>
                             <input
                               type="text"
@@ -318,7 +322,7 @@ export function EditorPage() {
                             />
                           </div>
                         )}
-
+  
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -343,22 +347,24 @@ export function EditorPage() {
                             />
                           </div>
                         </div>
-
-                        {Object.entries(selectedElement.attributes)
-                          .filter(([key]) => !['x', 'y', 'id'].includes(key))
-                          .map(([key, value]) => (
-                            <div key={key}>
-                              <label className="block text-sm font-medium text-slate-700 mb-1">
-                                {key}
-                              </label>
-                              <input
-                                type={['width', 'height'].includes(key) ? 'number' : 'text'}
-                                value={value}
-                                onChange={(e) => handleElementChange(selectedElement.id, key, e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                              />
-                            </div>
-                          ))}
+  
+                        {/* 特殊なプロパティのカスタム入力UI */}
+                        {selectedElement.type === 'text' && (
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                              テキスト配置
+                            </label>
+                            <select
+                              value={selectedElement.attributes['text-anchor'] || 'start'}
+                              onChange={(e) => handleElementChange(selectedElement.id, 'text-anchor', e.target.value)}
+                              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            >
+                              <option value="start">左揃え</option>
+                              <option value="middle">中央揃え</option>
+                              <option value="end">右揃え</option>
+                            </select>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="text-slate-500 text-center py-8">
@@ -368,44 +374,50 @@ export function EditorPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
-
+  
               <TabsContent value="style">
                 <Card>
                   <CardContent className="p-4">
                     {selectedElement ? (
-                      <div className="space-y-4">
+                      <div className="space-y-6">
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
                             塗りつぶし色
                           </label>
-                          <div className="flex space-x-2">
-                            {['#f0f9ff', '#60a5fa', '#1e40af', '#ffffff'].map(color => (
+                          <div className="grid grid-cols-6 gap-2">
+                            {['#ffffff', '#f0f9ff', '#60a5fa', '#1e40af', '#64748b', '#000000'].map(color => (
                               <button
                                 key={color}
-                                className="w-8 h-8 rounded-full border-2 border-slate-200"
+                                className={`w-8 h-8 rounded-full border-2 ${
+                                  selectedElement.attributes.fill === color ? 'border-blue-500' : 'border-slate-200'
+                                }`}
                                 style={{ backgroundColor: color }}
                                 onClick={() => handleElementChange(selectedElement.id, 'fill', color)}
                               />
                             ))}
                           </div>
                         </div>
+  
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
                             線の色
                           </label>
-                          <div className="flex space-x-2">
-                            {['#60a5fa', '#1e40af', '#000000'].map(color => (
+                          <div className="grid grid-cols-6 gap-2">
+                            {['#60a5fa', '#1e40af', '#64748b', '#000000'].map(color => (
                               <button
                                 key={color}
-                                className="w-8 h-8 rounded-full border-2 border-slate-200"
+                                className={`w-8 h-8 rounded-full border-2 ${
+                                  selectedElement.attributes.stroke === color ? 'border-blue-500' : 'border-slate-200'
+                                }`}
                                 style={{ backgroundColor: color }}
                                 onClick={() => handleElementChange(selectedElement.id, 'stroke', color)}
                               />
                             ))}
                           </div>
                         </div>
+  
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
                             線の太さ
                           </label>
                           <Slider
@@ -414,7 +426,11 @@ export function EditorPage() {
                             min={1}
                             max={10}
                             step={1}
+                            className="w-full"
                           />
+                          <div className="text-sm text-slate-500 mt-1 text-center">
+                            {selectedElement.attributes['stroke-width'] || 1}px
+                          </div>
                         </div>
                       </div>
                     ) : (
