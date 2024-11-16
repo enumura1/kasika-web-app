@@ -252,7 +252,8 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
                         <TemplatePreview 
                           template={{
                             content: result.templateContent,
-                            title: result.title
+                            title: result.title,
+                            id:result.templateId
                           }} 
                         />
                         <h3 className="font-semibold text-lg mb-2">{result.title}</h3>

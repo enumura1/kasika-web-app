@@ -7,6 +7,7 @@ import {
   import { HomePage } from '../pages/HomePage';
   import { UsagePage } from '../pages/UsagePage'
   import { SupportPage } from '../pages/SupportPage'; 
+  import { EditorPage } from '../pages/EditorPage';
 
   // ルートの定義を最新の書き方に修正
   const rootRoute = createRootRoute()
@@ -28,12 +29,20 @@ import {
     path: '/support',
     component: SupportPage
   });
+
+  // エディターページのルートを追加
+const editorRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/editor/$templateId',
+  component: EditorPage
+});
   
   // ルートツリーの作成
   const routeTree = rootRoute.addChildren([
     indexRoute,
     supportRoute,
-     usageRoute
+    usageRoute,
+    editorRoute
   ])
   
   // ルーターの作成
