@@ -1,17 +1,39 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Search, ArrowRight, Edit, Sparkles, Share2 } from 'lucide-react';
+import { ArrowLeft, Search, ArrowRight, Edit, Sparkles, Share2, Download, Palette } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
+import { Link } from '@tanstack/react-router';
 
 export function UsagePage() {
+  const editorFeatures = [
+    {
+      title: "基本操作",
+      description: "ズーム調整、元に戻す/やり直し、補助線表示など、直感的な操作が可能",
+      icon: <Edit className="h-5 w-5 text-blue-400" />
+    },
+    {
+      title: "スタイル編集",
+      description: "色や線の太さ、テキストの配置など、細かなスタイル調整が可能",
+      icon: <Palette className="h-5 w-5 text-blue-400" />
+    },
+    {
+      title: "エクスポート",
+      description: "SVG、WebP、PNG形式での保存に対応",
+      icon: <Download className="h-5 w-5 text-blue-400" />
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* ヘッダー */}
       <header className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <a href="/" className="p-2 hover:bg-blue-50 rounded-lg transition-colors">
+            <Link 
+              to="/"
+              className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+            >
               <ArrowLeft className="h-6 w-6 text-blue-600" />
-            </a>
+            </Link>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
               使い方ガイド
             </h1>
@@ -28,7 +50,7 @@ export function UsagePage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl font-bold text-slate-800 mb-6"
           >
-            3ステップで、あなたのアイデアを
+            4ステップで、あなたのアイデアを
             <br />
             魅力的な図解に変換
           </motion.h2>
@@ -75,12 +97,10 @@ export function UsagePage() {
                 </div>
               </div>
               <div className="bg-blue-50 rounded-xl p-6 aspect-video flex items-center justify-center">
-                {/* ここにイメージやアニメーションを配置 */}
                 <Edit className="h-20 w-20 text-blue-400" />
               </div>
             </div>
           </motion.div>
-
           {/* ステップ2 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -114,12 +134,12 @@ export function UsagePage() {
             </div>
           </motion.div>
 
-          {/* ステップ3 */}
+          {/* ステップ3：エディタ機能 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-2xl shadow-lg p-8 mb-12"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
@@ -127,28 +147,64 @@ export function UsagePage() {
                   Step 3
                 </span>
                 <h3 className="text-2xl font-bold text-slate-800">
-                  編集して完成
+                  エディタで編集
                 </h3>
                 <p className="text-slate-600">
-                  提案された図解を自由にカスタマイズ。
-                  色やレイアウト、テキストを調整して、あなたらしい図解に仕上げましょう。
+                  直感的なエディタで図解を自由にカスタマイズ。
+                  豊富な編集機能で思い通りの表現が可能です。
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                  {editorFeatures.map((feature, index) => (
+                    <div key={index} className="bg-blue-50 rounded-lg p-4">
+                      <div className="flex items-center space-x-3 mb-2">
+                        {feature.icon}
+                        <h4 className="font-semibold">{feature.title}</h4>
+                      </div>
+                      <p className="text-sm text-slate-600">{feature.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-blue-50 rounded-xl p-6 aspect-video flex items-center justify-center">
+                <Edit className="h-20 w-20 text-blue-400" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ステップ4 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-2xl shadow-lg p-8"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="md:order-2 space-y-6">
+                <span className="inline-block px-4 py-2 bg-blue-100 text-blue-600 rounded-full font-medium">
+                  Step 4
+                </span>
+                <h3 className="text-2xl font-bold text-slate-800">
+                  保存して活用
+                </h3>
+                <p className="text-slate-600">
+                  作成した図解をSVG、WebP、PNG形式で保存。
+                  プレゼンテーションやドキュメントにすぐに活用できます。
                 </p>
                 <div className="flex space-x-4">
                   <button className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
-                    編集する
+                    エクスポート
                   </button>
                   <button className="px-6 py-3 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-50 transition-colors">
                     共有する
                   </button>
                 </div>
               </div>
-              <div className="bg-blue-50 rounded-xl p-6 aspect-video flex items-center justify-center">
+              <div className="md:order-1 bg-blue-50 rounded-xl p-6 aspect-video flex items-center justify-center">
                 <Share2 className="h-20 w-20 text-blue-400" />
               </div>
             </div>
           </motion.div>
         </section>
-
         {/* 使用例セクション */}
         <section className="max-w-6xl mx-auto mb-20">
           <h3 className="text-2xl font-bold text-slate-800 text-center mb-12">
@@ -157,19 +213,19 @@ export function UsagePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: "ビジネス提案",
-                description: "事業計画、マーケティング戦略、組織設計など",
-                examples: ["事業計画書", "マーケティング戦略", "組織図"]
-              },
-              {
                 title: "プロジェクト管理",
-                description: "タスク管理、進捗報告、リスク管理など",
-                examples: ["ガントチャート", "WBS", "マイルストーン"]
+                description: "プロジェクトの計画や進捗を視覚的に表現",
+                examples: ["ガントチャート", "WBS図", "マイルストーン図"]
               },
               {
-                title: "教育・学習",
-                description: "講義資料、学習ノート、概念整理など",
-                examples: ["マインドマップ", "フローチャート", "概念図"]
+                title: "ビジネスモデル",
+                description: "事業構造やビジネスプランの図解",
+                examples: ["ビジネスモデルキャンバス", "バリューチェーン", "収益構造図"]
+              },
+              {
+                title: "組織・プロセス",
+                description: "組織構造や業務フローの設計",
+                examples: ["組織図", "業務フロー", "意思決定プロセス"]
               }
             ].map((use, index) => (
               <motion.div
@@ -209,15 +265,18 @@ export function UsagePage() {
               <p className="text-blue-50 mb-8">
                 カシカを使って、あなたのアイデアを魅力的な図解に変えてみませんか？
               </p>
-              <motion.a
-                href="/"
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-colors"
               >
-                <span>使ってみる</span>
-                <ArrowRight className="h-4 w-4" />
-              </motion.a>
+                <Link
+                  to="/"
+                  className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-colors"
+                >
+                  <span>使ってみる</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </motion.div>
             </CardContent>
           </Card>
         </section>
