@@ -519,7 +519,14 @@ export const HomePage = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">カシカについて</h4>
               <ul className="space-y-2">
-                <li><a href="/usage" className="hover:text-white">使い方</a></li>
+                <li>
+                  <Link 
+                    to="/usage"
+                    className="hover:text-white cursor-pointer" 
+                  >
+                    使い方
+                  </Link>
+                </li>
                 <li><a href="#" className="hover:text-white">利用規約</a></li>
                 <li><a href="#" className="hover:text-white">プライバシーポリシー</a></li>
               </ul>
