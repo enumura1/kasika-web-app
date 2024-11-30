@@ -4,6 +4,7 @@ import { Card, CardContent } from '../ui/card';
 import { ArrowLeft, Search } from 'lucide-react';
 import { categories } from '../../data/categories';
 import { TemplatePreview } from '../template/TemplatePreview';
+import ModernSkeletonLoader from './ModernSkeletonLoader';
 
 // Template型の定義
 type Template = {
@@ -34,28 +35,6 @@ interface SearchResultProps {
   onBack: () => void;
   onCategorySelect?: (category: typeof categories[0]) => void;
 }
-
-// スケルトンローダーコンポーネント
-const SkeletonLoader = () => (
-  <div className="space-y-8">
-    <div className="space-y-4">
-      <div className="h-8 w-64 bg-slate-200 rounded-lg animate-pulse" />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-64 bg-slate-200 rounded-lg animate-pulse" />
-        ))}
-      </div>
-    </div>
-    <div className="space-y-4">
-      <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 bg-slate-200 rounded-lg animate-pulse" />
-        ))}
-      </div>
-    </div>
-  </div>
-);
 
 export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} }: SearchResultProps) {
   const [loading, setLoading] = useState(true);
@@ -227,7 +206,7 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
       {/* 検索結果 */}
       <AnimatePresence mode="wait">
         {loading ? (
-          <SkeletonLoader />
+          <ModernSkeletonLoader />
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
