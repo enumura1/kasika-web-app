@@ -17,7 +17,7 @@ export function UsagePage() {
     },
     {
       title: "エクスポート",
-      description: "SVG、WebP、PNG形式での保存に対応",
+      description: "SVG、WebP、PNG、JPEG形式での保存に対応",
       icon: <Download className="h-5 w-5 text-blue-400" />
     }
   ];

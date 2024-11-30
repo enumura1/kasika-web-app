@@ -41,7 +41,7 @@ export function EditorPage() {
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(100);
   const [showGrid, setShowGrid] = useState(false);
-  const [exportFormat, setExportFormat] = useState<'svg'|'webp'|'png'>('webp');
+  const [exportFormat, setExportFormat] = useState<'svg'|'webp'|'png'|'jpeg'>('webp');
   const [history, setHistory] = useState<Array<string>>([]);  // SVGの状態履歴
   const [currentIndex, setCurrentIndex] = useState(-1);       // 現在の履歴インデックス
 
@@ -131,7 +131,7 @@ export function EditorPage() {
 
   const handleDownload = async () => {
     if (!svgRef.current) return;
-
+  
     try {
       const svgData = new XMLSerializer().serializeToString(svgRef.current);
       
@@ -145,22 +145,24 @@ export function EditorPage() {
         URL.revokeObjectURL(url);
         return;
       }
-
+  
       const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(svgBlob);
       const img = new Image();
-
+  
       img.onload = () => {
         const canvas = document.createElement('canvas');
         canvas.width = svgRef.current?.viewBox.baseVal.width || 800;
         canvas.height = svgRef.current?.viewBox.baseVal.height || 600;
         const ctx = canvas.getContext('2d');
-
+  
         if (ctx) {
           ctx.fillStyle = 'white';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0);
-
+  
+          const quality = exportFormat === 'jpeg' ? 0.85 : 0.9;
+          
           canvas.toBlob(
             (blob) => {
               if (blob) {
@@ -173,12 +175,12 @@ export function EditorPage() {
               }
             },
             `image/${exportFormat}`,
-            0.9
+            quality
           );
         }
         URL.revokeObjectURL(url);
       };
-
+  
       img.src = url;
     } catch (error) {
       console.error('Failed to convert SVG:', error);
@@ -303,15 +305,18 @@ export function EditorPage() {
                         </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {setExportFormat('svg'); handleDownload();}}>
-                            SVGとして保存
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {setExportFormat('webp'); handleDownload();}}>
-                            WebPとして保存
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {setExportFormat('png'); handleDownload();}}>
-                            PNGとして保存
-                        </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {setExportFormat('png'); handleDownload();}}>
+                              PNGとして保存
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {setExportFormat('jpeg'); handleDownload();}}>
+                            JPEGとして保存
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {setExportFormat('svg'); handleDownload();}}>
+                              SVGとして保存
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {setExportFormat('webp'); handleDownload();}}>
+                              WebPとして保存
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

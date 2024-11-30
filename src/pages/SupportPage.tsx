@@ -32,7 +32,7 @@ export function SupportPage() {
     {
       id: 5,
       question: "編集した図解フォーマットの保存方法を教えてください。",
-      answer: "右上の「エクスポート」ボタンからSVG、WebP、PNG形式で保存できます。"
+      answer: "右上の「エクスポート」ボタンからSVG、WebP、PNG、JPEG形式で保存できます。"
     },
     {
       id: 6,
