@@ -14,7 +14,7 @@ interface TemplatePreviewProps {
 }
 
 export function TemplatePreview({ template }: TemplatePreviewProps) {
-  const handleDownload = async (format: 'svg' | 'webp' | 'png') => {
+  const handleDownload = async (format: 'svg' | 'webp' | 'png'| 'jpeg') => {
     try {
       const parser = new DOMParser();
       const doc = parser.parseFromString(template.content, 'image/svg+xml');
@@ -50,6 +50,7 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
           ctx.fillStyle = 'white';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0);
+          const quality = format === 'jpeg' ? 0.85 : 0.9;
 
           canvas.toBlob(
             (blob) => {
@@ -63,7 +64,7 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
               }
             },
             `image/${format}`,
-            0.9
+            quality
           );
         }
         URL.revokeObjectURL(url);
@@ -103,14 +104,17 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center">
+                <DropdownMenuItem onClick={() => handleDownload('png')}>
+                  PNGとして保存
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDownload('jpeg')}>
+                  JPEGとして保存
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDownload('svg')}>
                   SVGとして保存
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDownload('webp')}>
                   WebPとして保存
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleDownload('png')}>
-                  PNGとして保存
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
