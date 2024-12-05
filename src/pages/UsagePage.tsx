@@ -50,9 +50,9 @@ export function UsagePage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl font-bold text-slate-800 mb-6"
           >
-            4ステップで、あなたのアイデアを
+            4ステップで、テキストチャットの内容を
             <br />
-            魅力的な図解に変換
+            分かりやすい図解に変換
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -60,9 +60,9 @@ export function UsagePage() {
             transition={{ delay: 0.2 }}
             className="text-lg text-slate-600"
           >
-            カシカは、誰でも簡単に図解を作成できるツールです。
+            カシカは、ビジネスチャットでの説明を図解でサポートするツールです。
             <br />
-            文章を入力するだけで、AIがあなたの意図を理解し、最適な図解を提案します。
+            チャットの内容を入力するだけで、AIが最適な図解を提案します。
           </motion.p>
         </section>
 
@@ -211,21 +211,22 @@ export function UsagePage() {
             さまざまな場面で活用できます
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
+            {
+            [
               {
-                title: "プロジェクト管理",
-                description: "プロジェクトの計画や進捗を視覚的に表現",
-                examples: ["ガントチャート", "WBS図", "マイルストーン図"]
+                title: "システム設計",
+                description: "システム構成やデータフローを視覚的に表現",
+                examples: ["アーキテクチャ図", "シーケンス図", "ER図"]
               },
               {
-                title: "ビジネスモデル",
-                description: "事業構造やビジネスプランの図解",
-                examples: ["ビジネスモデルキャンバス", "バリューチェーン", "収益構造図"]
+                title: "プロジェクト進行",
+                description: "プロジェクトの状況や進め方を共有",
+                examples: ["ガントチャート", "マイルストーン", "タスクフロー"]
               },
               {
-                title: "組織・プロセス",
-                description: "組織構造や業務フローの設計",
-                examples: ["組織図", "業務フロー", "意思決定プロセス"]
+                title: "提案・改善",
+                description: "アイデアや改善案の説明",
+                examples: ["比較図", "Before/After", "ロードマップ"]
               }
             ].map((use, index) => (
               <motion.div

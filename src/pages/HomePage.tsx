@@ -53,6 +53,21 @@ export const HomePage = () => {
     }, 500);
   };
 
+  const SectionHeader = ({ title, description }: { title: string; description: string }) => (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="text-center mb-16"
+    >
+      <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+        {title}
+      </h2>
+      <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+        {description}
+      </p>
+    </motion.div>
+   );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
        <ScrollToTop />
@@ -217,9 +232,9 @@ export const HomePage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-4xl font-bold leading-tight"
               >
-                あなたのアイデアを、
+                あなたのチャットを、
                 <br />
-                魅力的な図解に変換
+                図解で分かりやすく
               </motion.h2>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}
@@ -227,9 +242,10 @@ export const HomePage = () => {
                 transition={{ delay: 0.2 }}
                 className="text-lg text-blue-50"
               >
-                カシカは、複雑な考えを分かりやすく伝えるための
-                図解作成アシスタントです。AIがあなたの文章から
-                最適な図解フォーマットを提案します。
+                カシカは、ビジネスチャットでの複雑な説明を
+                図解でサポートするアシスタントです。AIが
+                最適な図解テンプレートを提案し、あなたの
+                説明をより分かりやすくします。
               </motion.p>
               <motion.button 
                 onClick={scrollToFormats}
@@ -272,154 +288,227 @@ export const HomePage = () => {
             />
 
         {/* フォーマットセクション */}
-        <section>
-  <div className="flex justify-between items-center mb-8">
-    <h3 className="text-xl font-semibold text-slate-800">
-      人気の図解フォーマット
-    </h3>
-    <Dialog>
-      <DialogTrigger asChild>
-        <button className="text-blue-500 hover:text-blue-600 flex items-center space-x-1">
-          <span>すべて見る</span>
-          <ArrowRight className="h-4 w-4" />
-        </button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px]">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              onClick={() => handleCategoryClick(category)}
-              className="cursor-pointer hover:shadow-md transition-all"
+        <section className="py-24">
+          <div className="className=py-24">
+            <SectionHeader
+              title="人気の図解フォーマット"
+              description="12カテゴリ96種類のテンプレートから、最適な図解を選べます"
+          />
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="text-blue-500 hover:text-blue-600 flex items-center space-x-1">
+                  <span>すべて見る</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[800px]">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+                  {categories.map((category) => (
+                    <div
+                      key={category.id}
+                      onClick={() => handleCategoryClick(category)}
+                      className="cursor-pointer hover:shadow-md transition-all"
+                    >
+                      <Card>
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{category.icon}</span>
+                            <div>
+                              <h4 className="font-semibold">{category.name}</h4>
+                              <p className="text-sm text-slate-500">{category.templateCount} テンプレート</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
+            {visibleCategories.map((category) => (
+              <motion.div
+                key={category.id}
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                onClick={() => handleCategoryClick(category)}
+              >
+                <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="bg-blue-50 p-3 rounded-xl">
+                        <span className="text-3xl">{category.icon}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-800">
+                          {category.name}
+                        </h3>
+                        <p className="text-sm text-blue-500">
+                          {category.templateCount} テンプレート
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+
+            {hiddenCategories.length > 0 && (
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-4">
+                          <div className="bg-blue-100 p-3 rounded-xl">
+                            <MoreHorizontal className="h-8 w-8 text-blue-500" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-800">
+                              その他
+                            </h3>
+                            <p className="text-sm text-blue-500">
+                              {hiddenCategories.length} カテゴリー
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <div className="grid grid-cols-1 gap-4 p-4">
+                      {hiddenCategories.map((category) => (
+                        <div
+                          key={category.id}
+                          onClick={() => handleCategoryClick(category)}
+                          className="cursor-pointer hover:shadow-md transition-all"
+                        >
+                          <Card>
+                            <CardContent className="p-4">
+                              <div className="flex items-center space-x-3">
+                                <span className="text-2xl">{category.icon}</span>
+                                <div>
+                                  <h4 className="font-semibold">{category.name}</h4>
+                                  <p className="text-sm text-slate-500">{category.description}</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </motion.div>
+            )}
+          </motion.div>
+        </section>
+
+
+        <section className="py-24">
+          <SectionHeader
+            title="ビジネスチャットの課題を解決"
+            description="文字だけでは伝わりにくい複雑な説明も、図解を使えば簡単に共有できます"
+          />
+  
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{category.icon}</span>
+              <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <CardContent className="p-8 relative">
+                  <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-50 rounded-full opacity-20 group-hover:scale-110 transition-transform" />
+                  <div className="flex items-start space-x-6 relative z-10">
+                    <div className="bg-blue-50 p-4 rounded-xl group-hover:bg-blue-100 transition-colors">
+                      <span className="text-4xl">⚡️</span>
+                    </div>
                     <div>
-                      <h4 className="font-semibold">{category.name}</h4>
-                      <p className="text-sm text-slate-500">{category.templateCount} テンプレート</p>
+                      <h4 className="text-xl font-semibold text-slate-800 mb-3">
+                        素早く正確に伝えたい
+                      </h4>
+                      <p className="text-slate-600 leading-relaxed text-lg">
+                        複雑な内容もAIが瞬時に理解し、最適な図解を提案。
+                        チャットでの説明時間を大幅に削減できます。
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
-  </div>
+            </motion.div>
 
-  <motion.div 
-    variants={containerVariants}
-    initial="hidden"
-    animate="visible"
-    className="grid grid-cols-1 md:grid-cols-3 gap-6"
-  >
-    {visibleCategories.map((category) => (
-      <motion.div
-        key={category.id}
-        variants={itemVariants}
-        whileHover={{ y: -5 }}
-        transition={{ type: "spring", stiffness: 300 }}
-        onClick={() => handleCategoryClick(category)}
-      >
-        <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-              <div className="bg-blue-50 p-3 rounded-xl">
-                <span className="text-3xl">{category.icon}</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">
-                  {category.name}
-                </h3>
-                <p className="text-sm text-blue-500">
-                  {category.templateCount} テンプレート
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    ))}
-
-    {hiddenCategories.length > 0 && (
-      <motion.div
-        variants={itemVariants}
-        whileHover={{ y: -5 }}
-        transition={{ type: "spring", stiffness: 300 }}
-      >
-        <Dialog>
-          <DialogTrigger asChild>
-            <Card className="cursor-pointer hover:shadow-lg transition-all border-blue-100 hover:border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-xl">
-                    <MoreHorizontal className="h-8 w-8 text-blue-500" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <CardContent className="p-8 relative">
+                  <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-50 rounded-full opacity-20 group-hover:scale-110 transition-transform" />
+                  <div className="flex items-start space-x-6 relative z-10">
+                    <div className="bg-blue-50 p-4 rounded-xl group-hover:bg-blue-100 transition-colors">
+                      <span className="text-4xl">🎯</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-semibold text-slate-800 mb-3">
+                        認識の齟齬を減らしたい
+                      </h4>
+                      <p className="text-slate-600 leading-relaxed text-lg">
+                        96種類のテンプレートを活用して視覚的に表現。
+                        チーム全員が同じイメージを共有できます。
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-800">
-                      その他
-                    </h3>
-                    <p className="text-sm text-blue-500">
-                      {hiddenCategories.length} カテゴリー
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </DialogTrigger>
-          <DialogContent>
-            <div className="grid grid-cols-1 gap-4 p-4">
-              {hiddenCategories.map((category) => (
-                <div
-                  key={category.id}
-                  onClick={() => handleCategoryClick(category)}
-                  className="cursor-pointer hover:shadow-md transition-all"
-                >
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{category.icon}</span>
-                        <div>
-                          <h4 className="font-semibold">{category.name}</h4>
-                          <p className="text-sm text-slate-500">{category.description}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </motion.div>
-    )}
-  </motion.div>
-</section>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
 
         {/* 使い方セクション */}
-        <section className="mt-20">
-          <h3 className="text-xl font-semibold text-slate-800 mb-8 text-center">
-            カシカの使い方
-          </h3>
+        <section className="py-24">
+          <SectionHeader
+            title="カシカの使い方"
+            description="3つの簡単なステップで、あなたのチャットを分かりやすい図解に変換します"
+          />
+          <div className="flex justify-end mb-8">
+              <Link 
+                to="/usage"
+                className="text-blue-500 hover:text-blue-600 flex items-center space-x-2"
+              >
+                <span>詳しい使い方を見る</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 icon: "✍️",
-                title: "1. やりたい事を入力 or フォーマット選択",
-                description: "伝えたい内容を文章で入力してくだい。もしくは、図解フォーマットから使用したいテンプレートを選択してください。"
+                title: "1. チャットの内容を入力",
+                description: "ビジネスチャットでの会話や説明したい内容を入力してください。もしくは、図解フォーマットから使用したいテンプレートを選択できます。"
               },
               {
                 icon: "🤖",
                 title: "2. AIが分析",
-                description: "最適な図解フォーマットを自動で提案します"
+                description: "入力内容から最適な図解テンプレートを提案します"
               },
               {
                 icon: "✨",
                 title: "3. 編集・完成",
-                description: "提案された図解を編集して完成させましょう"
+                description: "提案された図解を編集して、チャットに添付してみましょう"
               }
             ].map((step, index) => (
               <motion.div
@@ -441,31 +530,32 @@ export const HomePage = () => {
         </section>
 
         {/* 活用例セクション */}
-        <section className="mt-20">
-          <h3 className="text-xl font-semibold text-slate-800 mb-8 text-center">
-            こんな場面で活用できます
-          </h3>
+        <section className="py-24">
+          <SectionHeader
+            title="こんな場面で活用できます"
+            description="ビジネスチャットでの様々なシーンで、コミュニケーションをサポートします"
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                icon: "💼",
+                icon: "🛠️",
                 title: "ビジネス提案",
-                description: "企画書やプレゼン資料の作成に"
+                description: "機能やフローの説明をビジュアル化"
               },
               {
                 icon: "👥",
-                title: "チーム会議",
-                description: "アイデアの共有やブレストに"
+                title: "プロジェクト共有",
+                description: "アイデアの共有やブレスト、状況の共有に"
               },
               {
                 icon: "📚",
-                title: "学習・教育",
-                description: "概念の整理や知識の体系化に"
+                title: "提案・レビュー",
+                description: "アイデアや改善案の説明に"
               },
               {
-                icon: "🎯",
-                title: "目標設定",
-                description: "計画立案や進捗管理に"
+                icon: "🔄",
+                title: "プロセス改善",
+                description: "業務改善や効率化の提案に"
               }
             ].map((useCase, index) => (
               <motion.div
@@ -508,7 +598,7 @@ export const HomePage = () => {
             </CardContent>
           </Card>
         </section>
-        </>
+      </>
   )}
       </main>
 

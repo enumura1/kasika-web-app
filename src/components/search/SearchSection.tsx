@@ -40,7 +40,7 @@ export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps
             animate={{ opacity: 1 }}
             className="text-xl font-semibold text-slate-800 mb-4 text-center"
           >
-            あなたが使えたい事を入力してください
+            図解したいにチャット内容を入力してください
           </motion.h3>
           <form onSubmit={handleSearch}>
             <div className="relative">
