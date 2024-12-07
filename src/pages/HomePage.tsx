@@ -326,7 +326,7 @@ export const HomePage = () => {
                                 <span className="text-2xl">{category.icon}</span>
                                 <div>
                                   <h4 className="font-semibold">{category.name}</h4>
-                                  <p className="text-sm text-slate-500">{category.templateCount} テンプレート</p>
+                                  <p className="text-sm text-slate-500">8 テンプレート</p>
                                 </div>
                               </div>
                             </CardContent>
@@ -364,7 +364,7 @@ export const HomePage = () => {
                           {category.name}
                         </h3>
                         <p className="text-sm text-blue-500">
-                          {category.templateCount} テンプレート
+                          8 テンプレート
                         </p>
                       </div>
                     </div>
