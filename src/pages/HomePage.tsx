@@ -38,8 +38,18 @@ export const HomePage = () => {
     }
   };
 
-  const scrollToFormats = () => {
-    formatSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToSearch = () => {
+    if (searchInputRef.current) {
+      const windowHeight = window.innerHeight;
+      const elementRect = searchInputRef.current.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middle = absoluteElementTop - (windowHeight / 2) + (elementRect.height / 2);
+      
+      window.scrollTo({
+        top: middle,
+        behavior: 'smooth'
+      });
+    }
   };
 
   const handleCategoryClick = (category: typeof categories[0]) => {
@@ -211,7 +221,7 @@ export const HomePage = () => {
             {/* 右側のアクション */}
             <div className="flex items-center space-x-4">
             <button 
-              onClick={scrollToFormats} 
+              onClick={scrollToSearch} 
               className="hidden md:flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <span className="font-medium">試してみる</span>
@@ -223,54 +233,56 @@ export const HomePage = () => {
       </header>
 
       {/* ヒーローセクション */}
-      <section className="bg-gradient-to-br from-blue-600 to-blue-400 text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-4xl font-bold leading-tight"
-              >
-                あなたのチャットを、
-                <br />
-                図解で分かりやすく
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-lg text-blue-50"
-              >
-                カシカは、ビジネスチャットでの複雑な説明を
-                図解でサポートするアシスタントです。AIが
-                最適な図解テンプレートを提案し、あなたの
-                説明をより分かりやすくします。
-              </motion.p>
-              <motion.button 
-                onClick={scrollToFormats}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-colors"
-              >
-                <span>クイックスタート</span>
-                <ArrowRight className="h-4 w-4" />
-              </motion.button>
-            </div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="relative hidden md:block"
-            >
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg">
-                <div className="aspect-video bg-white/20 rounded-lg"></div>
+      {!selectedCategory && (
+        <section className="bg-gradient-to-br from-blue-600 to-blue-400 text-white py-16">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <motion.h2 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-4xl font-bold leading-tight"
+                >
+                  あなたのチャットを、
+                  <br />
+                  図解で分かりやすく
+                </motion.h2>
+                <motion.p 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-lg text-blue-50"
+                >
+                  カシカは、ビジネスチャットでの複雑な説明を
+                  図解でサポートするアシスタントです。AIが
+                  最適な図解テンプレートを提案し、あなたの
+                  説明をより分かりやすくします。
+                </motion.p>
+                <motion.button 
+                  onClick={scrollToSearch}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-colors"
+                >
+                  <span>クイックスタート</span>
+                  <ArrowRight className="h-4 w-4" />
+                </motion.button>
               </div>
-            </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="relative hidden md:block"
+              >
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg">
+                  <div className="aspect-video bg-white/20 rounded-lg"></div>
+                </div>
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* メインコンテンツ */}
       <main className="container mx-auto px-4 py-12" ref={formatSectionRef}>
@@ -284,47 +296,49 @@ export const HomePage = () => {
             {/* 検索セクション */}
             <SearchSection 
               onCategorySelect={handleCategoryClick} 
-              inputRef={searchInputRef}  // 追加
+              inputRef={searchInputRef}
             />
 
         {/* フォーマットセクション */}
         <section className="py-24">
           <div className="className=py-24">
             <SectionHeader
-              title="人気の図解フォーマット"
+              title="図解フォーマット"
               description="12カテゴリ96種類のテンプレートから、最適な図解を選べます"
-          />
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="text-blue-500 hover:text-blue-600 flex items-center space-x-1">
-                  <span>すべて見る</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[800px]">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-                  {categories.map((category) => (
-                    <div
-                      key={category.id}
-                      onClick={() => handleCategoryClick(category)}
-                      className="cursor-pointer hover:shadow-md transition-all"
-                    >
-                      <Card>
-                        <CardContent className="p-4">
-                          <div className="flex items-center space-x-3">
-                            <span className="text-2xl">{category.icon}</span>
-                            <div>
-                              <h4 className="font-semibold">{category.name}</h4>
-                              <p className="text-sm text-slate-500">{category.templateCount} テンプレート</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+            />
+            <div className="flex justify-end mb-8">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="text-blue-500 hover:text-blue-600 inline-flex items-center">
+                    <span className="mr-2">すべて見る</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </DialogTrigger>
+                  <DialogContent className="sm:max-w-[800px]">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+                      {categories.map((category) => (
+                        <div
+                          key={category.id}
+                          onClick={() => handleCategoryClick(category)}
+                          className="cursor-pointer hover:shadow-md transition-all"
+                        >
+                          <Card>
+                            <CardContent className="p-4">
+                              <div className="flex items-center space-x-3">
+                                <span className="text-2xl">{category.icon}</span>
+                                <div>
+                                  <h4 className="font-semibold">{category.name}</h4>
+                                  <p className="text-sm text-slate-500">8 テンプレート</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </DialogContent>
-            </Dialog>
+                  </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           <motion.div 
@@ -352,7 +366,7 @@ export const HomePage = () => {
                           {category.name}
                         </h3>
                         <p className="text-sm text-blue-500">
-                          {category.templateCount} テンプレート
+                          8 テンプレート
                         </p>
                       </div>
                     </div>
@@ -587,7 +601,7 @@ export const HomePage = () => {
                 カシカを使って、あなたの考えをより分かりやすく伝えてみませんか？
               </p>
               <motion.button 
-                onClick={scrollToFormats}
+                onClick={scrollToSearch}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold inline-flex items-center space-x-2 hover:bg-blue-50 transition-colors"
