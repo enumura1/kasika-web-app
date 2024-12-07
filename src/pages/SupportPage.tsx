@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 
 export function SupportPage() {
+  window.scrollTo(0, 0);
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
 
   const faqs = [

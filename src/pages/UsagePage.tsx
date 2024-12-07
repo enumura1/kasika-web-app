@@ -4,6 +4,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Link } from '@tanstack/react-router';
 
 export function UsagePage() {
+  window.scrollTo(0, 0);
   const editorFeatures = [
     {
       title: "基本操作",
