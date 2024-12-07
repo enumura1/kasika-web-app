@@ -54,6 +54,10 @@ export const HomePage = () => {
 
   const handleCategoryClick = (category: typeof categories[0]) => {
     setSelectedCategory(category);
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   const handleAIAssistClick = () => {
