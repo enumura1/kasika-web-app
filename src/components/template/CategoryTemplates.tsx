@@ -3,7 +3,9 @@ import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { TemplatePreview } from './TemplatePreview';
 import { useTemplates } from '../../hooks/useTemplates';
+import { TemplatesSkeleton } from '../ui/TemplatesSkeleton';
 import type { Category } from '../../data/categories';
+
 
 interface CategoryTemplatesProps {
   category: Category;
@@ -11,17 +13,17 @@ interface CategoryTemplatesProps {
 }
 
 export function CategoryTemplates({ category, onBack }: CategoryTemplatesProps) {
-  const { templates } = useTemplates();
+  const { templates, loading } = useTemplates();
   
   // 現在のカテゴリーに属するテンプレートのみをフィルタリング
   const categoryTemplates = templates.filter(t => t.categoryId === category.id);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container mx-auto px-4 py-8"
+      className="container mx-auto px-4 py-8 min-h-[800px]"
     >
       {/* ヘッダー */}
       <div className="mb-8 flex items-center space-x-4">
@@ -43,37 +45,43 @@ export function CategoryTemplates({ category, onBack }: CategoryTemplatesProps) 
       </div>
 
       {/* テンプレート一覧 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categoryTemplates.map((template, index) => (
-          <motion.div
-            key={template.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Card className="cursor-pointer hover:shadow-lg transition-all">
-              <CardContent className="p-6">
-                <TemplatePreview 
-                  template={{
-                    content: template.content,
-                    title: template.summary,
-                    id:template.id
-                  }} 
-                />
-                <h3 className="font-semibold text-lg mt-4 mb-2">{template.summary}</h3>
-                <p className="text-slate-600 text-sm">{category.description}</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* テンプレートが存在しない場合 */}
-      {categoryTemplates.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-600">
-            このカテゴリーのテンプレートは準備中です。
-          </p>
+      {loading ? (
+        <TemplatesSkeleton />
+      ) : categoryTemplates.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categoryTemplates.map((template, index) => (
+            <motion.div
+              key={template.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card className="cursor-pointer hover:shadow-lg transition-all">
+                <CardContent className="p-6">
+                  <TemplatePreview 
+                    template={{
+                      content: template.content,
+                      title: template.summary,
+                      id: template.id
+                    }} 
+                  />
+                  <h3 className="font-semibold text-lg mt-4 mb-2">{template.summary}</h3>
+                  <p className="text-slate-600 text-sm">{category.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex items-center justify-center h-[600px] bg-slate-50 rounded-xl">
+          <div className="text-center">
+            <p className="text-slate-600 mb-2">
+              このカテゴリーのテンプレートは準備中です。
+            </p>
+            <p className="text-slate-500 text-sm">
+              近日中に追加予定です。
+            </p>
+          </div>
         </div>
       )}
     </motion.div>

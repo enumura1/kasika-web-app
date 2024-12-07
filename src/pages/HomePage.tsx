@@ -233,54 +233,56 @@ export const HomePage = () => {
       </header>
 
       {/* ヒーローセクション */}
-      <section className="bg-gradient-to-br from-blue-600 to-blue-400 text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-4xl font-bold leading-tight"
-              >
-                あなたのチャットを、
-                <br />
-                図解で分かりやすく
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-lg text-blue-50"
-              >
-                カシカは、ビジネスチャットでの複雑な説明を
-                図解でサポートするアシスタントです。AIが
-                最適な図解テンプレートを提案し、あなたの
-                説明をより分かりやすくします。
-              </motion.p>
-              <motion.button 
-                onClick={scrollToSearch}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-colors"
-              >
-                <span>クイックスタート</span>
-                <ArrowRight className="h-4 w-4" />
-              </motion.button>
-            </div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="relative hidden md:block"
-            >
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg">
-                <div className="aspect-video bg-white/20 rounded-lg"></div>
+      {!selectedCategory && (
+        <section className="bg-gradient-to-br from-blue-600 to-blue-400 text-white py-16">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <motion.h2 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-4xl font-bold leading-tight"
+                >
+                  あなたのチャットを、
+                  <br />
+                  図解で分かりやすく
+                </motion.h2>
+                <motion.p 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-lg text-blue-50"
+                >
+                  カシカは、ビジネスチャットでの複雑な説明を
+                  図解でサポートするアシスタントです。AIが
+                  最適な図解テンプレートを提案し、あなたの
+                  説明をより分かりやすくします。
+                </motion.p>
+                <motion.button 
+                  onClick={scrollToSearch}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-colors"
+                >
+                  <span>クイックスタート</span>
+                  <ArrowRight className="h-4 w-4" />
+                </motion.button>
               </div>
-            </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="relative hidden md:block"
+              >
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg">
+                  <div className="aspect-video bg-white/20 rounded-lg"></div>
+                </div>
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* メインコンテンツ */}
       <main className="container mx-auto px-4 py-12" ref={formatSectionRef}>
