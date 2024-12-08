@@ -2,8 +2,17 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Search, ArrowRight, Edit, Sparkles, Share2, Download, Palette } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Link } from '@tanstack/react-router';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { Twitter, Facebook, Link as LinkIcon } from 'lucide-react';
+
 
 export function UsagePage() {
+  window.scrollTo(0, 0);
   const editorFeatures = [
     {
       title: "基本操作",
@@ -194,9 +203,39 @@ export function UsagePage() {
                   <button className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
                     エクスポート
                   </button>
-                  <button className="px-6 py-3 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-50 transition-colors">
-                    共有する
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="px-6 py-3 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-50 transition-colors">
+                        共有する
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem 
+                        className="cursor-pointer flex items-center"
+                        onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent('カシカ - ビジネスチャットを図解で分かりやすく')}&url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                      >
+                        <Twitter className="mr-2 h-4 w-4" />
+                        Xでシェア
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="cursor-pointer flex items-center"
+                        onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank')}
+                      >
+                        <Facebook className="mr-2 h-4 w-4" />
+                        Facebookでシェア
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="cursor-pointer flex items-center"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          // クリップボードにコピーされたことを示すトースト通知を表示
+                        }}
+                      >
+                        <LinkIcon className="mr-2 h-4 w-4" />
+                        URLをコピー
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
               <div className="md:order-1 bg-blue-50 rounded-xl p-6 aspect-video flex items-center justify-center">
