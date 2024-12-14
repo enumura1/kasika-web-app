@@ -30,19 +30,29 @@ import {
     component: SupportPage
   });
 
-  // エディターページのルートを追加
-const editorRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/editor/$templateId',
-  component: EditorPage
-});
-  
+  const generatedEditorRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/editor/generated',  // パスを修正
+    validateSearch: (search: Record<string, unknown>) => ({
+      svg: search.svg as string | undefined,
+    }),
+    component: EditorPage
+  });
+
+    // エディターページのルートを追加（無料プラン用）
+    const editorRoute = createRoute({
+      getParentRoute: () => rootRoute,
+      path: '/editor/$templateId',
+      component: EditorPage
+    });
+
   // ルートツリーの作成
   const routeTree = rootRoute.addChildren([
     indexRoute,
     supportRoute,
     usageRoute,
-    editorRoute
+    editorRoute,
+    generatedEditorRoute
   ])
   
   // ルーターの作成

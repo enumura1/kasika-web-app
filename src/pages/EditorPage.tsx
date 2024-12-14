@@ -1,6 +1,6 @@
 import { ArrowLeft, Download, ZoomIn, ZoomOut, Grid, Undo, Redo } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useSearch } from '@tanstack/react-router';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Slider } from '../components/ui/slider';
@@ -31,8 +31,13 @@ interface RouteParams {
   templateId: string;
 }
 
+interface SearchParams {
+  svg?: string;
+}
+
 export function EditorPage() {
   const params = { templateId: window.location.pathname.split('/').pop() } as RouteParams;
+  const { svg } = useSearch({ from: '/editor/generated' }) as SearchParams;
   const [selectedElement, setSelectedElement] = useState<SvgElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null) as React.MutableRefObject<SVGSVGElement | null>;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,26 +47,33 @@ export function EditorPage() {
   const [zoom, setZoom] = useState(100);
   const [showGrid, setShowGrid] = useState(false);
   const [exportFormat, setExportFormat] = useState<'svg'|'webp'|'png'|'jpeg'>('webp');
-  const [history, setHistory] = useState<Array<string>>([]);  // SVGの状態履歴
-  const [currentIndex, setCurrentIndex] = useState(-1);       // 現在の履歴インデックス
+  const [history, setHistory] = useState<Array<string>>([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   useEffect(() => {
     const loadTemplate = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/templates.json');
-        const data = await response.json();
-        const targetTemplate = data.templates.find((t: Template) => t.id === params.templateId);
-        
-        if (!targetTemplate) {
-          setError('テンプレートが見つかりませんでした');
-          return;
+        if (svg) {
+          // スタンダードプランの生成SVGの場合
+          setTemplate(svg);
+          setHistory([svg]);
+          setCurrentIndex(0);
+        } else {
+          // 通常のテンプレートの場合
+          const response = await fetch('/templates.json');
+          const data = await response.json();
+          const targetTemplate = data.templates.find((t: Template) => t.id === params.templateId);
+          
+          if (!targetTemplate) {
+            setError('テンプレートが見つかりませんでした');
+            return;
+          }
+    
+          setTemplate(targetTemplate.content);
+          setHistory([targetTemplate.content]);
+          setCurrentIndex(0);
         }
-  
-        setTemplate(targetTemplate.content);
-        // 履歴を初期化
-        setHistory([targetTemplate.content]);
-        setCurrentIndex(0);
       } catch (err) {
         setError('テンプレートの読み込みに失敗しました');
         console.error('Failed to load template:', err);
@@ -71,7 +83,7 @@ export function EditorPage() {
     };
   
     loadTemplate();
-  }, [params.templateId]);
+  }, [params.templateId, svg]);
 
   const handleElementSelect = (element: SVGElement) => {
     const attributes = Array.from(element.attributes).reduce((acc, attr) => ({

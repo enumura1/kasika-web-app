@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
+import { Checkbox } from "../ui/checkbox";
 import { SearchResult } from './SearchResult';
 import { categories } from '../../data/categories'; 
 
@@ -9,10 +10,12 @@ interface SearchSectionProps {
   inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-
-export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps)  {
+export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isStandardMode, setIsStandardMode] = useState(false);
+  
+  const isPlanEnabled = import.meta.env.VITE_ENABLE_STANDARD_PLAN === 'true';
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +27,7 @@ export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps
   const handleBack = () => {
     setIsSearching(false);
     setSearchQuery("");
+    setIsStandardMode(false);
   };
 
   return (
@@ -45,7 +49,7 @@ export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps
             </h3>
             <p className="text-slate-600 mb-8">
               チャットでの説明内容を入力してください。
-              AIがあなたの意図を理解し、ぴったりな図解テンプレートを見つけます。
+              AIがあなたの意図を理解し、ぴったりな図解を提案します。
             </p>
           </motion.div>
 
@@ -54,7 +58,7 @@ export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <form onSubmit={handleSearch}>
+            <form onSubmit={handleSearch} className="space-y-4">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
                 <input
@@ -77,6 +81,19 @@ export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps
                   <span className="font-medium">検索</span>
                 </button>
               </div>
+
+              {isPlanEnabled && (
+                <div className="flex items-center space-x-2 justify-center">
+                  <Checkbox
+                    id="standard-mode"
+                    checked={isStandardMode}
+                    onCheckedChange={(checked) => setIsStandardMode(checked as boolean)}
+                  />
+                  <label htmlFor="standard-mode" className="text-sm text-gray-600">
+                    スタンダードプランで図解を生成
+                  </label>
+                </div>
+              )}
             </form>
           </motion.div>
         </motion.section>
@@ -88,9 +105,11 @@ export function SearchSection({ onCategorySelect, inputRef }: SearchSectionProps
           className="w-full"
         >
           <SearchResult 
-           searchQuery={searchQuery}
-           onBack={handleBack} 
-           onCategorySelect={onCategorySelect}/>
+            searchQuery={searchQuery}
+            onBack={handleBack} 
+            onCategorySelect={onCategorySelect}
+            isStandardMode={isStandardMode}
+          />
         </motion.div>
       )}
     </AnimatePresence>

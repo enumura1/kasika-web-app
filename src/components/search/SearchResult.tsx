@@ -4,21 +4,27 @@ import { Card, CardContent } from '../ui/card';
 import { ArrowLeft, Search } from 'lucide-react';
 import { categories } from '../../data/categories';
 import { TemplatePreview } from '../template/TemplatePreview';
+// import { SvgRenderer } from '../svg/SvgRenderer';
 import ModernSkeletonLoader from './ModernSkeletonLoader';
+import { Link } from '@tanstack/react-router';
 
 // Template型の定義
 type Template = {
-  id: string;           // テンプレートID (例: "1-1")
-  summary: string;      // テンプレートの説明
-  categoryId: number;   // 関連するカテゴリーID
-  content: string;      // SVGコンテンツ
+  id: string;
+  summary: string;
+  categoryId: number;
+  content: string;
 };
 
 // APIレスポンスの型定義
-type APIResponse = {
+type DefaultModeResponse = {
   matched_id_1: string;
   matched_id_2: string;
   matched_id_3: string;
+};
+
+type StandardModeResponse = {
+  svg_content: string;
 };
 
 // 検索結果の型定義
@@ -34,12 +40,19 @@ interface SearchResultProps {
   searchQuery: string;
   onBack: () => void;
   onCategorySelect?: (category: typeof categories[0]) => void;
+  isStandardMode: boolean;
 }
 
-export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} }: SearchResultProps) {
+export function SearchResult({ 
+  searchQuery, 
+  onBack, 
+  onCategorySelect = () => {}, 
+  isStandardMode 
+}: SearchResultProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [standardModeSvg, setStandardModeSvg] = useState<string | null>(null);
   const [relatedCategories, setRelatedCategories] = useState<typeof categories>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
 
@@ -56,20 +69,27 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
       }
     };
     
-    fetchTemplates();
-  }, []);
+    if (!isStandardMode) {
+      fetchTemplates();
+    }
+  }, [isStandardMode]);
 
   // APIリクエストを行う関数
-  const fetchRecommendedTemplates = async (query: string): Promise<APIResponse> => {
+  const fetchRecommendedTemplates = async (query: string, isStandard: boolean): Promise<DefaultModeResponse | StandardModeResponse> => {
     try {
-      const response = await fetch(import.meta.env.VITE_API_ENDPOINT, {
+      const endpoint = isStandard 
+        ? import.meta.env.VITE_STANDARD_API_ENDPOINT 
+        : import.meta.env.VITE_API_ENDPOINT;
+  
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': import.meta.env.VITE_API_KEY
         },
         body: JSON.stringify({
-          user_input: query
+          user_input: query,
+          isStandardMode: isStandard
         })
       });
   
@@ -78,11 +98,14 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
       }
   
       const data = await response.json();
-      return {
-        matched_id_1: data.matched_id_1,
-        matched_id_2: data.matched_id_2,
-        matched_id_3: data.matched_id_3
-      };
+      // スタンダードモードの場合、bodyを再度パースする必要がある
+      if (isStandard) {
+        const parsedBody = JSON.parse(data.body);
+        return {
+          svg_content: parsedBody.svg_content
+        };
+      }
+      return data;
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
@@ -91,7 +114,7 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
 
   // 検索結果を生成する関数
   const generateSearchResults = (
-    apiResponse: APIResponse, 
+    apiResponse: DefaultModeResponse, 
     templates: Template[]
   ): SearchResult[] => {
     const templateIds = [
@@ -122,32 +145,39 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
   // 検索実行の副作用
   useEffect(() => {
     const fetchResults = async () => {
-      if (!templates.length) return;
+      if (!isStandardMode && !templates.length) return;
       
       setLoading(true);
       setError(null);
 
       try {
-        // APIリクエスト
-        const apiResponse = await fetchRecommendedTemplates(searchQuery);
+        const apiResponse = await fetchRecommendedTemplates(searchQuery, isStandardMode);
         
-        // 検索結果の生成
-        const searchResults = generateSearchResults(apiResponse, templates);
+        if (isStandardMode) {
+          const standardResponse = apiResponse as StandardModeResponse;
+          console.log('Standard mode response:', standardResponse);
+          setStandardModeSvg(standardResponse.svg_content);
+          setResults([]);
+        } else {
+          const defaultResponse = apiResponse as DefaultModeResponse;
+          const searchResults = generateSearchResults(defaultResponse, templates);
 
-        if (searchResults.length === 0) {
-          setError('検索結果が見つかりませんでした。別のキーワードをお試しください。');
-          return;
+          if (searchResults.length === 0) {
+            setError('検索結果が見つかりませんでした。別のキーワードをお試しください。');
+            return;
+          }
+
+          setResults(searchResults);
+          
+          // 関連カテゴリーの設定
+          const usedCategoryIds = searchResults.map(result => result.category.id);
+          const availableCategories = categories.filter(c => !usedCategoryIds.includes(c.id));
+          const shuffledCategories = availableCategories
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3);
+
+          setRelatedCategories(shuffledCategories);
         }
-
-        // 関連カテゴリーの設定
-        const usedCategoryIds = searchResults.map(result => result.category.id);
-        const availableCategories = categories.filter(c => !usedCategoryIds.includes(c.id));
-        const shuffledCategories = availableCategories
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
-
-        setResults(searchResults);
-        setRelatedCategories(shuffledCategories);
       } catch (err) {
         setError('検索中にエラーが発生しました。もう一度お試しください。');
         console.error('Search error:', err);
@@ -157,23 +187,23 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
     };
 
     fetchResults();
-  }, [searchQuery, templates]);
+  }, [searchQuery, templates, isStandardMode]);
 
   if (error) {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-md mx-auto bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-        <div className="text-red-600 mb-4">{error}</div>
-        <button
-          onClick={onBack}
-          className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
-        >
-          検索画面に戻る
-        </button>
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <div className="text-red-600 mb-4">{error}</div>
+          <button
+            onClick={onBack}
+            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            検索画面に戻る
+          </button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <motion.div
@@ -214,70 +244,108 @@ export function SearchResult({ searchQuery, onBack, onCategorySelect = () => {} 
             exit={{ opacity: 0 }}
             className="space-y-12"
           >
-            {/* 推奨フォーマット */}
-            <section>
-              <h2 className="text-xl font-semibold text-slate-800 mb-6">
-                推奨フォーマット {results.length === 0 && "(該当なし)"}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {results.map((result) => (
+            {isStandardMode ? (
+              <section>
+                <h2 className="text-xl font-semibold text-slate-800 mb-6">
+                  生成された図解
+                </h2>
+                {standardModeSvg && (
                   <motion.div
-                    key={result.templateId}
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <Card className="cursor-pointer hover:shadow-lg transition-all">
-                      <CardContent className="p-6">
+                    <Link
+                      to="/editor/generated"
+                      search={{ svg: standardModeSvg }}
+                      className="block"
+                    >
+                      <Card className="cursor-pointer hover:shadow-lg transition-all">
+                        <CardContent className="p-6">
                         <TemplatePreview 
                           template={{
-                            content: result.templateContent,
-                            title: result.title,
-                            id:result.templateId
-                          }} 
+                            content: standardModeSvg,
+                            title: "生成された図解",
+                            id: "generated"
+                          }}
                         />
-                        <h3 className="font-semibold text-lg mb-2">{result.title}</h3>
-                        <p className="text-slate-600 text-sm">{result.description}</p>
-                        <div className="mt-4 flex items-center space-x-2">
-                          <span className="text-2xl">{result.category.icon}</span>
-                          <span className="text-sm text-slate-500">{result.category.name}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                          <h3 className="font-semibold text-lg mb-2 mt-4">図解を編集する</h3>
+                          <p className="text-slate-600 text-sm">
+                            クリックして図解エディターで編集を開始できます
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </motion.div>
-                ))}
-              </div>
-            </section>
+                )}
+              </section>
+            ) : (
+              // デフォルトモードの表示
+              <>
+                <section>
+                  <h2 className="text-xl font-semibold text-slate-800 mb-6">
+                    推奨フォーマット {results.length === 0 && "(該当なし)"}
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {results.map((result) => (
+                      <motion.div
+                        key={result.templateId}
+                        whileHover={{ y: -5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Card className="cursor-pointer hover:shadow-lg transition-all">
+                          <CardContent className="p-6">
+                            <TemplatePreview 
+                              template={{
+                                content: result.templateContent,
+                                title: result.title,
+                                id: result.templateId
+                              }} 
+                            />
+                            <h3 className="font-semibold text-lg mb-2">{result.title}</h3>
+                            <p className="text-slate-600 text-sm">{result.description}</p>
+                            <div className="mt-4 flex items-center space-x-2">
+                              <span className="text-2xl">{result.category.icon}</span>
+                              <span className="text-sm text-slate-500">{result.category.name}</span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
 
-            {/* 関連カテゴリー */}
-            <section>
-              <h2 className="text-xl font-semibold text-slate-800 mb-6">
-                関連カテゴリー
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedCategories.map((category) => (
-                  <motion.div
-                    key={category.id}
-                    whileHover={{ y: -5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Card 
-                      className="cursor-pointer hover:shadow-lg transition-all"
-                      onClick={() => onCategorySelect(category)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{category.icon}</span>
-                          <div>
-                            <h3 className="font-semibold">{category.name}</h3>
-                            <p className="text-sm text-slate-500">{category.description}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            </section>
+                {/* 関連カテゴリー */}
+                <section>
+                  <h2 className="text-xl font-semibold text-slate-800 mb-6">
+                    関連カテゴリー
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {relatedCategories.map((category) => (
+                      <motion.div
+                        key={category.id}
+                        whileHover={{ y: -5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Card 
+                          className="cursor-pointer hover:shadow-lg transition-all"
+                          onClick={() => onCategorySelect(category)}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <span className="text-2xl">{category.icon}</span>
+                              <div>
+                                <h3 className="font-semibold">{category.name}</h3>
+                                <p className="text-sm text-slate-500">{category.description}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
+              </>
+            )}
 
             {/* 再検索ボタン */}
             <div className="text-center">
