@@ -245,7 +245,7 @@ export const HomePage = () => {
                 <motion.h2 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-4xl font-bold leading-tight"
+                  className="text-5xl font-bold leading-tight"
                 >
                   あなたのチャットを、
                   <br />
@@ -255,7 +255,7 @@ export const HomePage = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-lg text-blue-50"
+                  className="text-xl text-blue-50"
                 >
                   カシカは、ビジネスチャットでの複雑な説明を
                   図解でサポートするアシスタントです。AIが
@@ -279,8 +279,52 @@ export const HomePage = () => {
                 transition={{ delay: 0.3 }}
                 className="relative hidden md:block"
               >
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg">
-                  <div className="aspect-video bg-white/20 rounded-lg"></div>
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg flex items-center justify-center min-h-[400px]">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+                  <defs>
+                    <linearGradient id="bgGradient" x1="0" y1="0" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#EFF6FF" stopOpacity="0.6"/>
+                      <stop offset="100%" stopColor="#DBEAFE" stopOpacity="0.3"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="400" height="300" fill="url(#bgGradient)" rx="20"/>
+                  
+                  {/* グループ要素のy位置を90に変更して中央寄りに */}
+                  <g transform="translate(50, 90)">
+                    <rect x="0" y="0" width="300" height="24" rx="12" fill="#FFFFFF" opacity="0.9">
+                      <animate 
+                        attributeName="width" 
+                        values="0;300" 
+                        dur="1s" 
+                        begin="0s;anim3.end+2s"
+                        id="anim1"
+                        fill="freeze"
+                      />
+                    </rect>
+                    
+                    <rect x="0" y="50" width="240" height="24" rx="12" fill="#FFFFFF" opacity="0.7">
+                      <animate 
+                        attributeName="width" 
+                        values="0;240" 
+                        dur="0.8s" 
+                        begin="anim1.begin+0.3s;anim3.end+2.3s"
+                        id="anim2"
+                        fill="freeze"
+                      />
+                    </rect>
+                    
+                    <rect x="0" y="100" width="180" height="24" rx="12" fill="#FFFFFF" opacity="0.5">
+                      <animate 
+                        attributeName="width" 
+                        values="0;180" 
+                        dur="0.6s" 
+                        begin="anim2.begin+0.3s;anim3.end+2.6s"
+                        id="anim3"
+                        fill="freeze"
+                      />
+                    </rect>
+                  </g>
+                  </svg>
                 </div>
               </motion.div>
             </div>
