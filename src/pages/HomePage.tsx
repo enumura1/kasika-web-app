@@ -245,7 +245,7 @@ export const HomePage = () => {
                 <motion.h2 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-5xl font-bold leading-tight"
+                  className="text-4xl font-bold leading-tight"
                 >
                   あなたのチャットを、
                   <br />
