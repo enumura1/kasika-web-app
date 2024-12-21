@@ -1,10 +1,12 @@
 // src/components/error/ErrorFallback.tsx
-import { FallbackProps } from 'react-error-boundary';
-import { Card, CardContent } from '../ui/card';
-import { Button } from '../ui/button';
-import { RefreshCw } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router'
+import { Card, CardContent } from '../ui/card'
+import { Button } from '../ui/button'
+import { RefreshCw } from 'lucide-react'
 
-export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+export function ErrorComponent() {
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <Card className="max-w-md w-full">
@@ -14,14 +16,13 @@ export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
               申し訳ありません
             </h2>
             <p className="text-slate-600">
-              予期せぬエラーが発生しました。
+              アプリケーションで問題が発生しました。しばらく時間をおいて再度お試しください。
             </p>
-            <div className="bg-slate-50 p-4 rounded-lg text-sm text-slate-600 break-all">
-              {error.message}
-            </div>
             <Button 
-              onClick={resetErrorBoundary}
-              className="flex items-center gap-2"
+              onClick={() => {
+                navigate({ to: '/' })
+                window.location.reload()
+              }}
             >
               <RefreshCw className="w-4 h-4" />
               再読み込み
@@ -30,5 +31,5 @@ export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

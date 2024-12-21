@@ -8,6 +8,7 @@ import {
   import { UsagePage } from '../pages/UsagePage'
   import { SupportPage } from '../pages/SupportPage'; 
   import { EditorPage } from '../pages/EditorPage';
+  import { ErrorComponent } from '../components/error/ErrorFallback'
 
   // ルートの定義を最新の書き方に修正
   const rootRoute = createRootRoute()
@@ -15,27 +16,31 @@ import {
   const indexRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/',
-    component: HomePage
+    component: HomePage,
+    errorComponent: ErrorComponent
   })
   
   const usageRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/usage',
-    component: UsagePage
+    component: UsagePage,
+    errorComponent: ErrorComponent
   })
 
   const supportRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/support',
-    component: SupportPage
+    component: SupportPage,
+    errorComponent: ErrorComponent
   });
 
   // エディターページのルートを追加
-const editorRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/editor/$templateId',
-  component: EditorPage
-});
+  const editorRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/editor/$templateId',
+    component: EditorPage,
+    errorComponent: ErrorComponent
+  });
   
   // ルートツリーの作成
   const routeTree = rootRoute.addChildren([
