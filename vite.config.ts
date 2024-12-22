@@ -12,7 +12,6 @@ export default defineConfig({
         // ベンダーチャンクの分割
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          // 必要に応じて他のライブラリも分割可能
         },
       },
     },
