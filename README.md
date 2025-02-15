@@ -36,7 +36,7 @@
   - S3
   - CloudWatch
   - EventBridge
-- scikit-learn（テンプレート検索最適化）
+- scikit-learn（自然言語処理）
 
 ### 開発環境
 - Docker（Lambda）
