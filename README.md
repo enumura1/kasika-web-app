@@ -1,3 +1,5 @@
+※ 本アプリの開発は終了しております。
+
 # カシカ - ビジネスチャットを図解で分かりやすく
 
 カシカは、ビジネスチャットでの説明を図解でサポートするAIアシスタントです。AIによる図解テンプレートの提案と編集機能を提供するWebアプリケーションです。
@@ -23,13 +25,13 @@
 - React/TypeScript
 - shadcn/ui
 - Tailwind CSS
-- Framer Motion（アニメーション）
+- Framer Motion
 
 ### バックエンド
 - AWS
   - API Gateway
   - Lambda
-  - Bedrock (Claude)
+  - Bedrock (Claude 3 Haiku)
   - ECR
   - S3
   - CloudWatch
@@ -37,7 +39,7 @@
 - scikit-learn（テンプレート検索最適化）
 
 ### 開発環境
-- Docker
+- Docker（Lambda）
 
 ## ライセンス
 - 
