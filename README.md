@@ -1,50 +1,43 @@
-# React + TypeScript + Vite
+# カシカ - ビジネスチャットを図解で分かりやすく
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+カシカは、ビジネスチャットでの説明を図解でサポートするAIアシスタントです。AIによる図解テンプレートの提案と編集機能を提供するWebアプリケーションです。
 
-Currently, two official plugins are available:
+[デモサイト](https://kasika-web-app.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 主な機能
 
-## Expanding the ESLint configuration
+### 1. AIによる図解サポート
+- チャットの内容を入力すると、AIが最適な図解テンプレートを提案
+- 多様な図解テンプレートに対応（システム構成図、フロー図、アイデア比較図など）
+- RAGを活用した効率的なテンプレート検索
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 2. 直感的な編集機能
+- ドラッグ&ドロップで要素の配置を調整
+- 色やサイズ、線の太さなどを自由にカスタマイズ
+- SVG、PNG、JPEG形式での出力に対応
 
-- Configure the top-level `parserOptions` property like this:
+## 技術スタック
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### フロントエンド
+- Vite
+- React/TypeScript
+- shadcn/ui
+- Tailwind CSS
+- Framer Motion（アニメーション）
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### バックエンド
+- AWS
+  - API Gateway
+  - Lambda
+  - Bedrock (Claude)
+  - ECR
+  - S3
+  - CloudWatch
+  - EventBridge
+- scikit-learn（テンプレート検索最適化）
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### 開発環境
+- Docker
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## ライセンス
+- 
